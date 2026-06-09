@@ -1,21 +1,21 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة اسعار حلاوة المولد ـ Jana Gold 2026 م / 1447 هـ </title>
+    <title>قائمة اسعار حلاوة حلاوتنا 1477 هـ / 2026 م </title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* --- ألوان الثيم الأخضر --- */
-            --primary-dark: #1B5E20;   
-            --primary-light: #43A047;  
-            --accent-gold: #2E7D32;    
-            --bg-cream: #F1F8E9;       
-            --text-main: #002200;      
-            --border-color: #A5D6A7;   
+            /* --- ألوان الثيم الذهبي --- */
+            --primary-dark: #7B5B00;   /* ذهبي داكن */
+            --primary-light: #C49A00;  /* ذهبي متوسط */
+            --accent-gold: #A07800;    /* ذهبي للأسعار */
+            --bg-cream: #FDF8EC;       /* كريمي دافئ */
+            --text-main: #2C1F00;      /* بني داكن */
+            --border-color: #E8D48A;   /* ذهبي فاتح للحدود */
             
             /* مقاسات ثابتة */
             --page-height: 550px; 
@@ -24,7 +24,7 @@
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #E8F5E9; 
+            background-color: #FDF5DC; 
             background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
             margin: 0;
             padding-bottom: 0; 
@@ -36,11 +36,11 @@
             max-width: 900px;
             margin: 40px auto; 
             background-color: #ffffff;
-            box-shadow: 0 20px 40px rgba(27, 94, 32, 0.2); 
+            box-shadow: 0 20px 40px rgba(123, 91, 0, 0.2); 
             border-radius: 8px;
             overflow: hidden;
             position: relative;
-            border-left: 1px solid #C8E6C9;
+            border-left: 1px solid #E8D48A;
             border-right: 12px solid var(--primary-dark); 
         }
 
@@ -55,7 +55,7 @@
         .logo-container img {
             max-width: 150px;
             height: auto;
-            filter: drop-shadow(0 6px 10px rgba(27, 94, 32, 0.2));
+            filter: drop-shadow(0 6px 10px rgba(123, 91, 0, 0.2));
             margin-bottom: 10px;
             display: block; 
             margin-left: auto;
@@ -109,7 +109,7 @@
 
         .search-box input:focus {
             border-color: var(--primary-dark); 
-            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.2); 
+            box-shadow: 0 0 0 3px rgba(123, 91, 0, 0.2); 
         }
 
         .search-box i {
@@ -149,7 +149,7 @@
 
         .index-btn {
             background: #fff;
-            border: 1px solid var(--primary-light);
+            border: 1px solid var(--border-color);
             color: var(--primary-dark);
             padding: 15px;
             text-align: center;
@@ -165,7 +165,7 @@
             background-color: var(--primary-dark);
             color: #fff;
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(27, 94, 32, 0.3);
+            box-shadow: 0 5px 15px rgba(123, 91, 0, 0.3);
         }
 
         .index-btn i {
@@ -195,7 +195,7 @@
         .menu-item:hover {
             transform: translateY(-2px);
             border-color: var(--primary-light);
-            box-shadow: 0 4px 8px rgba(27, 94, 32, 0.1);
+            box-shadow: 0 4px 8px rgba(123, 91, 0, 0.1);
         }
 
         .item-name {
@@ -207,8 +207,8 @@
 
         .item-unit {
             font-size: 0.85rem;
-            color: #558B2F; 
-            background-color: #F1F8E9; 
+            color: #8A6500; 
+            background-color: #FDF8EC; 
             padding: 2px 8px;
             border-radius: 4px;
             display: inline-block;
@@ -257,7 +257,7 @@
         }
 
         .social-bar a {
-            color: #C8E6C9; 
+            color: #F0D98A; 
             font-size: 1.3rem; 
             margin: 0 15px;
             transition: 0.3s;
@@ -295,8 +295,8 @@
             white-space: nowrap; 
         }
 
-        .nav-btn:hover:not(:disabled) { background-color: #004D40; } 
-        .nav-btn:disabled { background-color: rgba(27, 94, 32, 0.4); cursor: not-allowed; color: #e0e0e0; }
+        .nav-btn:hover:not(:disabled) { background-color: #4A3600; } 
+        .nav-btn:disabled { background-color: rgba(123, 91, 0, 0.35); cursor: not-allowed; color: #e0e0e0; }
 
         /* ستايل زر الفهرس الجديد */
         .home-btn {
@@ -307,7 +307,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .home-btn:hover {
-            background-color: #F1F8E9;
+            background-color: var(--bg-cream);
             color: var(--primary-dark);
             transform: scale(1.05);
         }
@@ -373,13 +373,12 @@
             .pagination-nav {
                 padding: 10px 15px;
                 flex-direction: column; 
-                gap: 10px; /* زيادة المسافة قليلاً */
+                gap: 10px;
             }
             .page-info {
                 font-size: 0.85rem; 
             }
             
-            /* ترتيب الأزرار في الموبايل */
             .nav-btn {
                 padding: 8px 12px; 
                 font-size: 0.8rem;
@@ -388,12 +387,12 @@
             }
 
             .page-info-container {
-                order: -1; /* المعلومات فوق */
+                order: -1;
                 margin-bottom: 5px;
             }
             
             .home-btn {
-                width: auto; /* الزرار مايكونش عريض اوي في الموبايل */
+                width: auto;
                 border-radius: 50%;
                 width: 40px;
                 height: 40px;
@@ -401,10 +400,10 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 5px auto; /* توسيط */
+                margin: 5px auto;
             }
             .home-btn span {
-                display: none; /* إخفاء كلمة الفهرس في الموبايل والاكتفاء بالأيقونة */
+                display: none;
             }
             
             .social-bar {
@@ -468,16 +467,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <script>
-        // **********************************************************
-        // هام جداً: ضع رابط الجوجل شيت CSV هنا
-        // **********************************************************
         const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGoyAsNR0JPLb2TQNSDI55YiWFCV0b5bRAmUTsWJxLvjCL_wA-NuoK2_OCCPggtjQ7eI_1JsXxvxlX/pub?output=csv';
 
         const pageContent = document.getElementById('page-content');
         const searchInput = document.getElementById('searchInput');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        const indexBtn = document.getElementById('indexBtn'); // تعريف الزر الجديد
+        const indexBtn = document.getElementById('indexBtn');
         const pageInfo = document.getElementById('pageInfo');
         const socialBar = document.querySelector('.social-bar'); 
         
@@ -522,14 +518,12 @@
                 }
             });
 
-            // تحويل البيانات لمصفوفة
             let rawCategories = Object.keys(categoriesMap).map(catName => ({
                 categoryName: catName,
                 items: categoriesMap[catName],
                 isIndex: false 
             })).filter(cat => cat.items.length > 0);
 
-            // إضافة صفحة الفهرس
             const indexPage = {
                 categoryName: "فهرس المنتجات",
                 isIndex: true, 
@@ -672,14 +666,13 @@
             
             const currentCatName = allCategories[currentPageIndex].categoryName;
             
-            // تحديث نص الصفحة وزر الفهرس
             if (currentPageIndex === 0) {
                 pageInfo.innerHTML = `<strong>القائمة الرئيسية</strong>`;
                 prevBtn.innerHTML = `<i class="fas fa-chevron-right"></i> لا يوجد`;
-                indexBtn.style.display = 'none'; // إخفاء زر الفهرس لأننا فيه بالفعل
+                indexBtn.style.display = 'none';
             } else {
                 pageInfo.innerHTML = `التصنيف: <strong>${currentCatName}</strong>`;
-                indexBtn.style.display = 'inline-flex'; // إظهار الزر في باقي الصفحات
+                indexBtn.style.display = 'inline-flex';
                 
                 if (currentPageIndex === 1) {
                      prevBtn.innerHTML = `<i class="fas fa-chevron-right"></i> الفهرس`;
@@ -715,7 +708,6 @@
                 }
             };
             
-            // تفعيل زر الفهرس الجديد
             indexBtn.onclick = () => {
                 displayPage(0);
             };
