@@ -302,6 +302,24 @@
             border: 1px solid var(--border);
         }
 
+        .item-package {
+            font-size: 0.78rem;
+            color: #5a3e00;
+            background: #fff3cc;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid #e8c84a;
+            margin-right: 4px;
+        }
+
+        .item-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
         .item-right {
             display: flex;
             flex-direction: column;
@@ -668,15 +686,17 @@ function processData(data) {
         const nameKey = findKey(item, 'الصنف');
         const priceKey= findKey(item, 'السعر');
         const unitKey = findKey(item, 'الوحدة');
+        const pkgKey  = findKey(item, 'العبوة');
 
         const cat   = catKey   ? item[catKey].trim()   : null;
         const name  = nameKey  ? item[nameKey].trim()  : null;
         const price = priceKey ? item[priceKey].trim() : null;
         const unit  = unitKey  ? item[unitKey].trim()  : null;
+        const pkg   = pkgKey   ? item[pkgKey].trim()   : null;
 
         if (cat && name) {
             if (!map[cat]) map[cat] = [];
-            map[cat].push({ name, price, unit });
+            map[cat].push({ name, price, unit, pkg });
         }
     });
 
@@ -728,13 +748,16 @@ function buildItemCard(item) {
     el.className = 'menu-item';
 
     const priceDisplay = item.price || '--';
-    const unitHTML = item.unit ? `<div class="item-unit">${item.unit}</div>` : '';
-    const shareText = `*${item.name}*\nالسعر: ${priceDisplay} ج.م${item.unit ? '\nالوحدة: ' + item.unit : ''}\n\n📍 Jana Gold`;
+    const badges = [];
+    if (item.pkg)  badges.push(`<span class="item-package"><i class="fas fa-box" style="font-size:0.7rem;margin-left:3px"></i>${item.pkg}</span>`);
+    if (item.unit) badges.push(`<span class="item-unit">${item.unit}</span>`);
+    const badgesHTML = badges.length ? `<div class="item-badges">${badges.join('')}</div>` : '';
+    const shareText = `*${item.name}*\nالسعر: ${priceDisplay} ج.م${item.pkg ? '\nالعبوة: ' + item.pkg : ''}${item.unit ? '\nالوحدة: ' + item.unit : ''}\n\n📍 Jana Gold`;
 
     el.innerHTML = `
         <div class="item-details">
             <div class="item-name">${item.name}</div>
-            ${unitHTML}
+            ${badgesHTML}
         </div>
         <div class="item-right">
             <div class="item-price">${priceDisplay} <span class="currency">ج.م</span></div>
@@ -911,10 +934,12 @@ function handleSearch(term) {
         const nk = findKey(item, 'الصنف');
         const pk = findKey(item, 'السعر');
         const uk = findKey(item, 'الوحدة');
+        const pgk= findKey(item, 'العبوة');
         grid.appendChild(buildItemCard({
             name:  item[nk] ? item[nk].trim() : '',
-            price: pk && item[pk] ? item[pk].trim() : null,
-            unit:  uk && item[uk] ? item[uk].trim() : null,
+            price: pk  && item[pk]  ? item[pk].trim()  : null,
+            unit:  uk  && item[uk]  ? item[uk].trim()  : null,
+            pkg:   pgk && item[pgk] ? item[pgk].trim() : null,
         }));
     });
 
