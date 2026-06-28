@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -19,23 +19,60 @@
             --border: #E8D48A;
             --white: #ffffff;
             --shadow: rgba(123,91,0,0.15);
-            --page-pad: 28px;
+            --page-pad: 24px;
+            --bg-body: #F5EDD0;
+        }
+
+        body.dark-mode {
+            --gold-dark: #FFD966;
+            --gold-mid: #F1C232;
+            --gold-light: #BF9000;
+            --gold-accent: #F1C232;
+            --cream: #1A1A1A;
+            --cream-dark: #2D2D2D;
+            --text-dark: #F5F5F5;
+            --text-mid: #CCCCCC;
+            --border: #444444;
+            --white: #222222;
+            --shadow: rgba(0,0,0,0.5);
+            --bg-body: #121212;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Tajawal', sans-serif;
-            background: #F5EDD0;
+            background: var(--bg-body);
             background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
             color: var(--text-dark);
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+            padding-bottom: 60px;
         }
 
-        /* ===== BOOK WRAPPER ===== */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            color: var(--gold-dark);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px var(--shadow);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
         .menu-book {
             max-width: 900px;
-            margin: 30px auto;
+            margin: 20px auto;
             background: var(--white);
             border-radius: 12px;
             overflow: hidden;
@@ -43,568 +80,359 @@
             position: relative;
         }
 
-        /* ===== PROGRESS BAR ===== */
-        #progress-bar {
-            height: 4px;
-            background: var(--cream-dark);
-            position: relative;
-        }
-        #progress-fill {
-            height: 100%;
-            background: linear-gradient(to left, var(--gold-mid), var(--gold-light));
-            transition: width 0.4s ease;
-            width: 0%;
-        }
+        #progress-bar { height: 4px; background: var(--cream-dark); position: relative; }
+        #progress-fill { height: 100%; background: linear-gradient(to left, var(--gold-mid), var(--gold-light)); transition: width 0.4s ease; width: 0%; }
 
-        /* ===== HEADER ===== */
         header {
             text-align: center;
-            padding: 28px 20px 20px;
-            background: linear-gradient(to bottom, #fff 0%, var(--cream) 100%);
+            padding: 20px 15px;
+            background: linear-gradient(to bottom, var(--white) 0%, var(--cream) 100%);
             border-bottom: 2px dashed var(--border);
             position: relative;
         }
 
-        header .logo-wrap img {
-            max-width: 120px;
-            height: auto;
-            display: block;
-            margin: 0 auto 10px;
-            filter: drop-shadow(0 4px 8px var(--shadow));
-        }
+        header .logo-wrap { position: relative; width: 120px; height: 120px; margin: 0 auto 10px; }
+        header .logo-ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: logoSpin 18s linear infinite; direction: ltr; }
+        header .logo-ring text { font-family: 'Tajawal', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 3px; fill: var(--gold-dark); direction: ltr; unicode-bidi: bidi-override; }
+        header .logo-wrap img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75px; height: 75px; border-radius: 50%; object-fit: cover; display: block; background: var(--white); border: 2px solid var(--gold-light); filter: drop-shadow(0 4px 8px var(--shadow)); }
 
-        header h1 {
-            font-family: 'Amiri', serif;
-            font-size: 2.2rem;
-            color: var(--gold-dark);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+        @keyframes logoSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        header .tagline {
-            color: var(--gold-accent);
-            font-size: 0.95rem;
-            margin-top: 4px;
-        }
+        header h1 { font-family: 'Amiri', serif; font-size: 2rem; color: var(--gold-dark); font-weight: 700; }
+        header .tagline { color: var(--gold-accent); font-size: 0.95rem; margin-top: 2px; }
 
-        header .year-badge {
-            display: inline-block;
+        .stats-badge {
+            display: inline-flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .header-badge {
             background: var(--cream-dark);
             border: 1px solid var(--border);
             color: var(--text-mid);
-            font-size: 0.8rem;
-            padding: 3px 12px;
+            font-size: 0.78rem;
+            padding: 4px 12px;
             border-radius: 20px;
-            margin-top: 8px;
+            font-weight: 600;
         }
 
-        /* ===== SEARCH ===== */
-        .search-wrap {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background: var(--cream);
-            padding: 10px 28px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
+        .search-wrap { position: sticky; top: 0; z-index: 90; background: var(--cream); padding: 10px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+        .search-inner { position: relative; width: 100%; max-width: 560px; }
+        .search-inner input { width: 100%; padding: 12px 46px 12px 44px; border: 1.5px solid var(--border); border-radius: 50px; font-family: 'Tajawal', sans-serif; font-size: 1rem; outline: none; background: var(--white); color: var(--text-dark); }
+        .search-inner input:focus { border-color: var(--gold-dark); box-shadow: 0 0 0 3px rgba(123,91,0,0.12); }
+        .search-inner .si-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--gold-mid); }
+        #clearSearch { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gold-mid); cursor: pointer; display: none; background: none; border: none; font-size: 1.1rem; }
 
-        .search-inner {
-            position: relative;
-            width: 100%;
-            max-width: 560px;
-        }
-
-        .search-inner input {
-            width: 100%;
-            padding: 10px 46px 10px 44px;
-            border: 1.5px solid var(--border);
-            border-radius: 50px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            background: #fff;
-            color: var(--text-dark);
-            transition: border-color 0.25s, box-shadow 0.25s;
-        }
-
-        .search-inner input:focus {
-            border-color: var(--gold-dark);
-            box-shadow: 0 0 0 3px rgba(123,91,0,0.12);
-        }
-
-        .search-inner .si-icon {
+        .autocomplete-suggestions {
             position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gold-mid);
-            pointer-events: none;
-        }
-
-        #clearSearch {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gold-mid);
-            cursor: pointer;
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            padding: 0;
-        }
-
-        /* ===== PAGE CONTENT ===== */
-        #page-content {
-            padding: var(--page-pad);
-            min-height: 420px;
-            max-height: 560px;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 200px;
             overflow-y: auto;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            transition: opacity 0.25s ease;
+            z-index: 100;
+            box-shadow: 0 4px 10px var(--shadow);
+            display: none;
+        }
+        .suggestion-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--cream-dark);
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-dark);
+        }
+        .suggestion-item:hover { background: var(--cream); }
+        .suggestion-cat { font-size: 0.75rem; color: var(--gold-accent); background: var(--cream-dark); padding: 2px 6px; border-radius: 4px; }
+
+        #page-content { padding: var(--page-pad); min-height: 400px; max-height: 600px; overflow-y: auto; scroll-behavior: smooth; }
+
+        /* ===== LOADING CHOCO ===== */
+        .loading-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 60px 0;
+            color: var(--text-mid);
+            font-size: 1rem;
         }
 
-        #page-content.fading { opacity: 0; }
+        .choco-loader {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-        /* scrollbar */
-        #page-content::-webkit-scrollbar { width: 6px; }
-        #page-content::-webkit-scrollbar-track { background: var(--cream); }
-        #page-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .choco-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            background: var(--gold-dark);
+            position: relative;
+            animation: chocoWave 1.2s ease-in-out infinite;
+        }
+
+        .choco-dot::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 3px;
+            height: 3px;
+            background: rgba(255,255,255,0.28);
+            border-radius: 1px;
+        }
+
+        .choco-dot:nth-child(1) { animation-delay: 0s; }
+        .choco-dot:nth-child(2) { animation-delay: 0.15s; }
+        .choco-dot:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes chocoWave {
+            0%, 80%, 100% { transform: translateY(0) scale(1); opacity: 0.55; }
+            40% { transform: translateY(-5px) scale(1.15); opacity: 1; }
+        }
 
         /* ===== CATEGORY TITLE ===== */
-        .cat-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border);
+        .cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+        .cat-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--cream-dark); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--gold-dark); }
+        .cat-title-text { font-family: 'Amiri', serif; font-size: 1.6rem; color: var(--gold-dark); font-weight: 700; }
+        .cat-count { margin-right: auto; background: var(--cream-dark); border: 1px solid var(--border); color: var(--text-mid); font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; }
+
+        .index-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 16px; 
         }
 
-        .cat-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: var(--cream-dark);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            color: var(--gold-dark);
-            flex-shrink: 0;
-        }
-
-        .cat-title-text {
-            font-family: 'Amiri', serif;
-            font-size: 1.7rem;
-            color: var(--gold-dark);
-            font-weight: 700;
-        }
-
-        .cat-count {
-            margin-right: auto;
-            background: var(--cream-dark);
-            border: 1px solid var(--border);
-            color: var(--text-mid);
-            font-size: 0.8rem;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        /* ===== INDEX GRID ===== */
-        .index-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 12px;
-        }
-
-        .index-btn {
-            background: #fff;
-            border: 1.5px solid var(--border);
-            color: var(--gold-dark);
-            padding: 14px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
-            font-family: 'Tajawal', sans-serif;
-            transition: all 0.25s;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            text-align: right;
-        }
-
-        .index-btn:hover {
-            background: var(--gold-dark);
-            color: #fff;
-            border-color: var(--gold-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px var(--shadow);
-        }
-
-        .index-btn .idx-count {
-            font-size: 0.78rem;
-            opacity: 0.7;
-            font-weight: 500;
-            margin-right: 6px;
-        }
-
-        .index-btn:hover .idx-count { opacity: 0.85; }
-
-        /* ===== ITEMS GRID ===== */
-        .items-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 12px;
-        }
-
-        .menu-item {
-            background: #fff;
-            border: 1.5px solid var(--border);
-            padding: 12px 14px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        .index-btn { 
             position: relative;
-            cursor: pointer;
+            background: var(--white); 
+            border: 1.5px solid var(--border); 
+            height: 120px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-family: 'Tajawal', sans-serif; 
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-end; 
+            text-align: left; 
+            width: 100%; 
+            padding: 0;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s;
         }
 
-        .menu-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--gold-mid);
-            box-shadow: 0 4px 12px var(--shadow);
-        }
-
-        .item-name {
-            font-weight: 700;
-            color: var(--text-dark);
-            font-size: 0.97rem;
-            margin-bottom: 4px;
-            line-height: 1.3;
-        }
-
-        .item-unit {
-            font-size: 0.8rem;
-            color: var(--text-mid);
-            background: var(--cream);
-            padding: 2px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            border: 1px solid var(--border);
-        }
-
-        .item-package {
-            font-size: 0.78rem;
-            color: #5a3e00;
-            background: #fff3cc;
-            padding: 2px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            border: 1px solid #e8c84a;
-            margin-right: 4px;
-        }
-
-        .item-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 4px;
-        }
-
-        .item-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            flex-shrink: 0;
-            margin-right: 10px;
-        }
-
-        .item-price {
-            font-weight: 800;
-            color: var(--gold-accent);
-            font-size: 1.1rem;
-            white-space: nowrap;
-        }
-
-        .item-price .currency {
-            font-size: 0.75rem;
-            color: var(--gold-mid);
-            font-weight: 500;
-        }
-
-        /* copy + share buttons */
-        .item-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .act-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--cream);
-            color: var(--text-mid);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .act-btn:hover { background: var(--gold-dark); color: #fff; border-color: var(--gold-dark); }
-        .act-btn.wa:hover { background: #25D366; border-color: #25D366; color: #fff; }
-        .act-btn.copied { background: #25D366; border-color: #25D366; color: #fff; }
-
-        /* ===== TOAST ===== */
-        #toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--gold-dark);
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-family: 'Tajawal', sans-serif;
-            opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 999;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ===== SHOW MORE BTN ===== */
-        .toggle-btn {
-            width: 100%;
-            margin-top: 14px;
-            padding: 11px;
-            border: 1.5px dashed var(--border);
-            background: var(--cream);
-            color: var(--gold-dark);
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: all 0.25s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .toggle-btn:hover {
-            background: var(--gold-dark);
-            color: #fff;
-            border-style: solid;
-            border-color: var(--gold-dark);
-        }
-
-        /* ===== NAV ===== */
-        .pagination-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 24px;
-            background: var(--gold-mid);
-            position: relative;
-        }
-
-        .nav-btn {
-            background: var(--gold-dark);
-            color: #fff;
-            padding: 9px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s, transform 0.15s;
-            white-space: nowrap;
-        }
-
-        .nav-btn:hover:not(:disabled) {
-            background: #4A3600;
-            transform: scale(1.03);
-        }
-
-        .nav-btn:disabled {
-            background: rgba(123,91,0,0.3);
-            cursor: not-allowed;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .nav-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #pageInfo {
-            color: #fff;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .index-nav-btn {
-            background: #fff;
-            color: var(--gold-dark);
-            padding: 6px 14px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 700;
-            font-size: 0.82rem;
-            display: none;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .index-nav-btn:hover { background: var(--cream-dark); }
-
-        /* ===== SOCIAL BAR ===== */
-        .social-bar {
-            max-width: 900px;
-            margin: 16px auto 30px;
-            background: var(--gold-dark);
-            padding: 12px 0;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 14px var(--shadow);
-        }
-
-        .social-bar a {
-            color: var(--gold-light);
-            font-size: 1.25rem;
-            margin: 0 14px;
-            transition: all 0.25s;
-            display: inline-block;
-        }
-
-        .social-bar a:hover { color: #fff; transform: scale(1.15) translateY(-2px); }
-
-        /* ===== SEARCH RESULTS EMPTY ===== */
-        .no-results {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-mid);
-        }
-
-        .no-results i { font-size: 2.5rem; color: var(--border); margin-bottom: 12px; display: block; }
-        .no-results p { font-size: 1.05rem; }
-
-        /* ===== SCROLL TO TOP ===== */
-        #scrollTopBtn {
+        .index-cat-img { 
             position: absolute;
-            bottom: 70px;
-            left: 20px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--gold-dark);
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 8px var(--shadow);
-            transition: opacity 0.3s;
-            z-index: 5;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            z-index: 1;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* ===== MOBILE ===== */
+        .index-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.85) 40%, rgba(0, 0, 0, 0.1) 100%);
+            z-index: 2;
+            transition: background 0.4s;
+        }
+
+        .index-btn-info { 
+            position: relative;
+            z-index: 3; 
+            display: flex; 
+            flex-direction: column; 
+            padding-left: 20px; 
+            margin-right: auto; 
+            transform: translateX(-15px); 
+            opacity: 0.9;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s;
+        }
+
+        .index-btn-title { 
+            font-weight: 800; 
+            font-size: 1.25rem; 
+            color: #ffffff; 
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+        }
+
+        .idx-count { 
+            font-size: 0.85rem; 
+            color: var(--gold-light); 
+            margin-top: 4px; 
+            font-weight: bold;
+        }
+
+        .index-btn .fa-chevron-left {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.6);
+            color: #ffffff;
+            z-index: 3;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .index-btn:hover { 
+            transform: translateY(-4px) scale(1.02); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
+            border-color: var(--gold-mid);
+        }
+
+        .index-btn:hover .index-cat-img {
+            transform: scale(1.1) rotate(1deg);
+        }
+
+        .index-btn:hover .index-btn-info {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .index-btn:hover .fa-chevron-left {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .index-btn:hover::after {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 50%, rgba(0, 0, 0, 0.2) 100%);
+        }
+
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .menu-item { background: var(--white); border: 1.5px solid var(--border); padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .menu-item:hover { transform: translateY(-2px); border-color: var(--gold-mid); box-shadow: 0 4px 12px var(--shadow); }
+        .item-details { display: flex; flex-direction: column; gap: 4px; }
+        .item-name { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
+        .item-package-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--cream-dark); color: var(--gold-dark); padding: 2px 8px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; width: fit-content; margin-top: 2px; }
+        .search-cat-badge { font-size: 0.72rem; color: var(--white); background: var(--gold-accent); padding: 2px 6px; border-radius: 4px; width: fit-content; margin-bottom: 2px; }
+
+        .item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-right: 10px; }
+        .price-block { display: flex; flex-direction: column; align-items: flex-end; background: var(--cream); padding: 4px 10px; border-radius: 8px; border: 1px dashed var(--gold-mid); }
+        .item-price { font-weight: 800; color: var(--gold-accent); font-size: 1.15rem; }
+        .item-price .currency { font-size: 0.75rem; }
+        .unit-label { font-size: 0.72rem; color: var(--text-mid); }
+
+        .item-actions { display: flex; gap: 6px; }
+        .act-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border); background: var(--cream); color: var(--text-mid); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .act-btn:hover { background: var(--gold-dark); color: #fff; }
+        .act-btn.wa:hover { background: #25D366; color: #fff; border-color: #25D366; }
+
+        #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--gold-dark); color: #fff; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s; z-index: 999; }
+        #toast.show { opacity: 1; }
+
+        .toggle-btn { width: 100%; margin-top: 12px; padding: 12px; border: 1.5px dashed var(--border); background: var(--cream); color: var(--gold-dark); border-radius: 8px; cursor: pointer; font-family: 'Tajawal', sans-serif; font-weight: 600; font-size: 1rem; }
+
+        .pagination-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--gold-mid); }
+        .nav-btn { background: var(--gold-dark); color: #fff; padding: 10px 18px; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .nav-center { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        #pageInfo { color: #fff; font-size: 0.9rem; font-weight: 600; }
+        .index-nav-btn { background: #fff; color: var(--gold-dark); padding: 5px 12px; border: none; border-radius: 50px; cursor: pointer; font-size: 0.82rem; font-weight: 700; display: none; }
+
+        .social-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--gold-dark);
+            padding: 10px 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .social-bar a { color: var(--gold-light); font-size: 1.4rem; transition: transform 0.2s; }
+        .social-bar a:hover { color: #fff; transform: scale(1.1); }
+
+        #scrollTopBtn { position: absolute; bottom: 70px; left: 20px; width: 36px; height: 36px; border-radius: 50%; background: var(--gold-dark); color: #fff; border: none; display: none; align-items: center; justify-content: center; z-index: 5; }
+
+        .no-results { text-align: center; padding: 40px 20px; color: var(--text-mid); }
+        .no-results i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+
         @media (max-width: 600px) {
-            .menu-book { margin: 0; border-radius: 0; box-shadow: none; }
-            #page-content { padding: 16px; max-height: 52vh; }
-            .items-grid, .index-grid { grid-template-columns: 1fr; }
-            header h1 { font-size: 1.7rem; }
-            .cat-title-text { font-size: 1.4rem; }
-            .pagination-nav { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
-            .nav-btn { font-size: 0.82rem; padding: 8px 14px; }
-            .nav-center { order: -1; width: 100%; }
-            .social-bar { margin: 12px 0 20px; border-radius: 0; }
+            .menu-book { margin: 0; border-radius: 0; }
+            #page-content { padding: 10px; max-height: 55vh; }
+            .items-grid, .index-grid { grid-template-columns: 1fr; gap: 8px; }
+            header h1 { font-size: 1.6rem; }
+            .index-btn { height: 110px; }
+            .index-btn-info { padding-left: 15px; }
+            .menu-item { padding: 10px; }
+            .act-btn { width: 36px; height: 36px; font-size: 1rem; }
+            .pagination-nav { padding: 8px 12px; }
+            .nav-btn { padding: 8px 14px; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
+<button class="dark-mode-toggle" id="darkModeToggle" title="تبديل الوضع الثنائي">🌙</button>
 <div id="toast"></div>
 
 <div class="menu-book">
-
     <div id="progress-bar"><div id="progress-fill"></div></div>
 
     <header>
         <div class="logo-wrap">
+            <svg class="logo-ring" viewBox="0 0 150 150">
+                <defs><path id="logoCirclePath" d="M 75,75 m -62,0 a 62,62 0 1,1 124,0 a 62,62 0 1,1 -124,0" /></defs>
+                <text><textPath href="#logoCirclePath" startOffset="0%">JANA GOLD  •  JANA GOLD  •  JANA GOLD  •</textPath></text>
+            </svg>
             <img src="logo.png" alt="شعار المحل" onerror="this.style.display='none'">
         </div>
         <h1>Jana Gold</h1>
-        <p class="tagline">أجود الأنواع وأفضل الأسعار</p>
-        <div class="year-badge">1447 هـ &nbsp;·&nbsp; 2026 م</div>
+        <p class="tagline">حلاوة حلاوتنا</p>
+        <p class="tagline"> 2026م / 1448هـ</p>
+        <div class="stats-badge">
+            <div class="header-badge" id="totalItemsBadge">جاري التحديث...</div>
+            <div class="header-badge" id="updateDateBadge">تحديث: 2026 م</div>
+        </div>
     </header>
 
     <div class="search-wrap">
         <div class="search-inner">
             <i class="fas fa-search si-icon"></i>
-            <input type="text" id="searchInput" placeholder="نفسك في إيه؟ ابحث هنا...">
-            <button id="clearSearch" title="مسح البحث"><i class="fas fa-times"></i></button>
+            <input type="text" id="searchInput" placeholder="نفسك في إيه؟ ابحث هنا..." autocomplete="off">
+            <button id="clearSearch"><i class="fas fa-times"></i></button>
+            <div class="autocomplete-suggestions" id="autocompleteBox"></div>
         </div>
     </div>
 
     <div id="page-content">
-        <div style="text-align:center;padding:60px 0;color:var(--text-mid);">
-            <i class="fas fa-spinner fa-spin" style="font-size:1.8rem;margin-bottom:12px;display:block;color:var(--gold-mid)"></i>
-            جاري تحميل القائمة...
+        <div class="loading-wrap">
+            <span>جاري تحضير الحلوي  </span>
+            <div class="choco-loader">
+                <div class="choco-dot"></div>
+                <div class="choco-dot"></div>
+                <div class="choco-dot"></div>
+            </div>
         </div>
     </div>
 
-    <button id="scrollTopBtn" title="للأعلى"><i class="fas fa-chevron-up"></i></button>
+    <button id="scrollTopBtn"><i class="fas fa-chevron-up"></i></button>
 
     <div class="pagination-nav">
-        <button id="prevBtn" class="nav-btn" disabled>
-            <i class="fas fa-chevron-right"></i> السابق
-        </button>
-
+        <button id="prevBtn" class="nav-btn" disabled><i class="fas fa-chevron-right"></i> السابق</button>
         <div class="nav-center">
             <div id="pageInfo"></div>
-            <button id="indexBtn" class="index-nav-btn">
-                <i class="fas fa-th-large"></i> الفهرس
-            </button>
+            <button id="indexBtn" class="index-nav-btn"><i class="fas fa-th-large"></i> الفهرس</button>
         </div>
-
-        <button id="nextBtn" class="nav-btn" disabled>
-            التالي <i class="fas fa-chevron-left"></i>
-        </button>
+        <button id="nextBtn" class="nav-btn" disabled>التالي <i class="fas fa-chevron-left"></i></button>
     </div>
-
 </div>
 
 <div class="social-bar">
@@ -612,7 +440,6 @@
     <a href="https://wa.me/+201227201188" title="واتساب"><i class="fab fa-whatsapp"></i></a>
     <a href="https://www.instagram.com/nazeeh_al_attar?igsh=djc4MmhrNm1pdjhh" title="إنستجرام"><i class="fab fa-instagram"></i></a>
     <a href="https://t.me/+TDjFEhC9WXcxZjNk" title="تليجرام"><i class="fab fa-telegram"></i></a>
-    <a href="https://www.google.com/maps/dir/30.0580864,31.2508416/30.0578724,31.2508303/@30.0579794,31.2530264,17z" title="الموقع"><i class="fa-solid fa-location-dot"></i></a>
     <a href="tel:+201227201188" title="اتصل بنا"><i class="fas fa-phone-alt"></i></a>
 </div>
 
@@ -623,6 +450,7 @@ const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGoyAsNR0JPLb
 const pageContent = document.getElementById('page-content');
 const searchInput  = document.getElementById('searchInput');
 const clearSearch  = document.getElementById('clearSearch');
+const autocompleteBox = document.getElementById('autocompleteBox');
 const prevBtn      = document.getElementById('prevBtn');
 const nextBtn      = document.getElementById('nextBtn');
 const indexBtn     = document.getElementById('indexBtn');
@@ -630,32 +458,39 @@ const pageInfoEl   = document.getElementById('pageInfo');
 const progressFill = document.getElementById('progress-fill');
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 const toastEl      = document.getElementById('toast');
+const darkModeToggle = document.getElementById('darkModeToggle');
 
 let allData = [];
 let allCategories = [];
 let currentPageIndex = 0;
 const PREVIEW_COUNT = 6;
 
-/* ---- Category icons map ---- */
-const catIcons = {
-    default: 'fa-box-open',
-    'عسل':   'fa-jar',
-    'زيوت':  'fa-flask',
-    'أعشاب': 'fa-leaf',
-    'بهارات':'fa-pepper-hot',
-    'مكسرات':'fa-seedling',
-    'حلاوة': 'fa-star',
-    'تمر':   'fa-drumstick-bite',
+const catImages = {
+     'علف': 'alaf.jpeg',
+    'مدور': 'mdawar.jpeg',
+    'ملبن': 'malban.jpeg',
+    'قشطة': 'qeshta.jpeg',
+    'بولا': 'baula.jpeg',
+    'مربي': 'mraba.jpeg',
+    'الأكثر مبيعاً': 'logo.png',
+    'فوااخر': 'fwagher.jpeg',
+    'معبأ': 'moaba.jpeg',
+    'نوجا': 'noga.jpeg',
+    'شكلمة': 'shklama.jpg'
 };
 
-function getCatIcon(name) {
-    for (const [k, v] of Object.entries(catIcons)) {
+function getCatImg(name) {
+    for (const [k, v] of Object.entries(catImages)) {
         if (name.includes(k)) return v;
     }
-    return catIcons.default;
+    return catImages.default;
 }
 
-/* ---- Utils ---- */
+darkModeToggle.onclick = () => {
+    document.body.classList.toggle('dark-mode');
+    darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+};
+
 function findKey(item, target) {
     for (const key in item) {
         if (key && key.trim() === target) return key;
@@ -671,43 +506,68 @@ function showToast(msg) {
 
 function animatePage(cb) {
     pageContent.classList.add('fading');
-    setTimeout(() => {
-        cb();
-        pageContent.classList.remove('fading');
-        pageContent.scrollTop = 0;
-    }, 200);
+    setTimeout(() => { cb(); pageContent.scrollTop = 0; }, 200);
 }
 
-/* ---- Process CSV ---- */
+function cleanText(str) {
+    if (!str) return '';
+    return str.toLowerCase()
+        .replace(/[أإآا]/g, 'ا')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .trim();
+}
+
 function processData(data) {
     const map = {};
+    const bestSellers = [];
+    let validItemsCount = 0;
+
     data.forEach(item => {
         const catKey  = findKey(item, 'التصنيف');
         const nameKey = findKey(item, 'الصنف');
         const priceKey= findKey(item, 'السعر');
         const unitKey = findKey(item, 'الوحدة');
         const pkgKey  = findKey(item, 'العبوة');
+        const bestKey = findKey(item, 'الأكثر مبيعاً');
 
         const cat   = catKey   ? item[catKey].trim()   : null;
         const name  = nameKey  ? item[nameKey].trim()  : null;
         const price = priceKey ? item[priceKey].trim() : null;
         const unit  = unitKey  ? item[unitKey].trim()  : null;
         const pkg   = pkgKey   ? item[pkgKey].trim()   : null;
+        const isBest= bestKey  ? item[bestKey].trim().toLowerCase() : '';
 
         if (cat && name) {
+            validItemsCount++;
+            const itemObj = { name, price, unit, pkg, categoryName: cat };
+            
             if (!map[cat]) map[cat] = [];
-            map[cat].push({ name, price, unit, pkg });
+            map[cat].push(itemObj);
+
+            if (isBest === 'نعم' || isBest === 'true' || isBest === 'موافق') {
+                bestSellers.push(itemObj);
+            }
         }
     });
+
+    document.getElementById('totalItemsBadge').textContent = `إجمالي المنتجات: ${validItemsCount}`;
+    const now = new Date();
+    document.getElementById('updateDateBadge').textContent = `تحديث: ${now.toLocaleDateString('ar-EG')}`;
 
     const cats = Object.keys(map)
         .filter(k => map[k].length > 0)
         .map(k => ({ categoryName: k, items: map[k], isIndex: false }));
 
-    allCategories = [{ categoryName: 'فهرس المنتجات', isIndex: true, items: [] }, ...cats];
+    allCategories = [{ categoryName: 'فهرس المنتجات', isIndex: true, items: [] }];
+    
+    if (bestSellers.length > 0) {
+        allCategories.push({ categoryName: '⭐ الأكثر مبيعاً', items: bestSellers, isIndex: false });
+    }
+    
+    allCategories.push(...cats);
 }
 
-/* ---- Render Index ---- */
 function renderIndex() {
     const grid = document.createElement('div');
     grid.className = 'index-grid';
@@ -716,21 +576,25 @@ function renderIndex() {
         if (idx === 0) return;
         const btn = document.createElement('button');
         btn.className = 'index-btn';
+        
         btn.innerHTML = `
-            <span>${cat.categoryName}</span>
-            <span class="idx-count">${cat.items.length} صنف <i class="fas fa-arrow-left" style="font-size:0.75rem;margin-right:4px"></i></span>
+            <img class="index-cat-img" src="${getCatImg(cat.categoryName)}" alt="${cat.categoryName}">
+            <div class="index-btn-info">
+                <span class="index-btn-title">${cat.categoryName}</span>
+                <span class="idx-count">${cat.items.length} صنف</span>
+            </div>
+            <i class="fas fa-chevron-left"></i>
         `;
         btn.onclick = () => displayPage(idx);
         grid.appendChild(btn);
     });
 
     pageContent.innerHTML = '';
-    const hdr = buildCatHeader('فهرس المنتجات', allCategories.length - 1 + ' تصنيف', 'fa-th-large');
+    const hdr = buildCatHeader('فهرس أقسام Jana Gold', (allCategories.length - 1) + ' قسم رئيسي', 'fa-th-large');
     pageContent.appendChild(hdr);
     pageContent.appendChild(grid);
 }
 
-/* ---- Build category header ---- */
 function buildCatHeader(title, countText, iconClass) {
     const hdr = document.createElement('div');
     hdr.className = 'cat-header';
@@ -742,100 +606,75 @@ function buildCatHeader(title, countText, iconClass) {
     return hdr;
 }
 
-/* ---- Build item card ---- */
-function buildItemCard(item) {
+function buildItemCard(item, showBadge = false) {
     const el = document.createElement('div');
     el.className = 'menu-item';
 
     const priceDisplay = item.price || '--';
-    const badges = [];
-    if (item.pkg)  badges.push(`<span class="item-package"><i class="fas fa-box" style="font-size:0.7rem;margin-left:3px"></i>${item.pkg}</span>`);
-    if (item.unit) badges.push(`<span class="item-unit">${item.unit}</span>`);
-    const badgesHTML = badges.length ? `<div class="item-badges">${badges.join('')}</div>` : '';
-    const shareText = `*${item.name}*\nالسعر: ${priceDisplay} ج.م${item.pkg ? '\nالعبوة: ' + item.pkg : ''}${item.unit ? '\nالوحدة: ' + item.unit : ''}\n\n📍 Jana Gold`;
+    const pkgBadge = item.pkg ? `<div class="item-package-tag"><i class="fas fa-box" style="font-size:0.7rem;margin-left:3px"></i> ${item.pkg}</div>` : '';
+    const unitLabel = item.unit ? `<div class="unit-label">لكل ${item.unit}</div>` : '';
+    const catBadge = showBadge ? `<div class="search-cat-badge">${item.categoryName}</div>` : '';
+    
+    const shareText = `*${item.name}*\nالسعر: ${priceDisplay} ج.م${item.pkg ? '\nالعبوة: ' + item.pkg : ''}\n📍 Jana Gold`;
 
     el.innerHTML = `
         <div class="item-details">
+            ${catBadge}
             <div class="item-name">${item.name}</div>
-            ${badgesHTML}
+            ${pkgBadge}
         </div>
         <div class="item-right">
-            <div class="item-price">${priceDisplay} <span class="currency">ج.م</span></div>
+            <div class="price-block">
+                <div class="item-price">${priceDisplay} <span class="currency">ج.م</span></div>
+                ${unitLabel}
+            </div>
             <div class="item-actions">
                 <button class="act-btn copy-btn" title="نسخ السعر"><i class="fas fa-copy"></i></button>
-                <a class="act-btn wa" href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" title="مشاركة واتساب"><i class="fab fa-whatsapp"></i></a>
+                <a class="act-btn wa" href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
     `;
 
     el.querySelector('.copy-btn').onclick = (e) => {
         e.stopPropagation();
-        navigator.clipboard.writeText(`${item.name}: ${priceDisplay} ج.م`).catch(() => {});
-        const btn = e.currentTarget;
-        btn.classList.add('copied');
-        btn.innerHTML = '<i class="fas fa-check"></i>';
+        navigator.clipboard.writeText(`${item.name}: ${priceDisplay} ج.م`);
         showToast('تم نسخ السعر ✓');
-        setTimeout(() => {
-            btn.classList.remove('copied');
-            btn.innerHTML = '<i class="fas fa-copy"></i>';
-        }, 1800);
     };
 
     return el;
 }
 
-/* ---- Render Category ---- */
 function renderCategory(catData, fullView = false) {
     pageContent.innerHTML = '';
-
     if (catData.isIndex) { renderIndex(); return; }
 
-    const icon = getCatIcon(catData.categoryName);
+    const icon = catData.categoryName.includes('الأكثر') ? 'fa-fire' : 'fa-box-open';
     const hdr  = buildCatHeader(catData.categoryName, catData.items.length + ' صنف', icon);
     pageContent.appendChild(hdr);
 
     const grid = document.createElement('div');
     grid.className = 'items-grid';
 
-    const shown = (fullView || catData.items.length <= PREVIEW_COUNT)
-        ? catData.items
-        : catData.items.slice(0, PREVIEW_COUNT);
-
+    const shown = (fullView || catData.items.length <= PREVIEW_COUNT) ? catData.items : catData.items.slice(0, PREVIEW_COUNT);
     shown.forEach(item => grid.appendChild(buildItemCard(item)));
     pageContent.appendChild(grid);
 
     if (catData.items.length > PREVIEW_COUNT) {
         const btn = document.createElement('button');
         btn.className = 'toggle-btn';
-        btn.setAttribute('data-full', fullView ? '1' : '0');
-
-        if (fullView) {
-            btn.innerHTML = '<i class="fas fa-chevron-up"></i> عرض أقل';
-        } else {
-            btn.innerHTML = `<i class="fas fa-chevron-down"></i> عرض المزيد (${catData.items.length - PREVIEW_COUNT} صنف إضافي)`;
-        }
-
-        btn.onclick = () => {
-            const isNowFull = btn.getAttribute('data-full') !== '1';
-            renderCategory(catData, isNowFull);
-            if (!isNowFull) pageContent.scrollTop = 0;
-        };
-
+        btn.innerHTML = fullView ? '<i class="fas fa-chevron-up"></i> عرض أقل' : `<i class="fas fa-chevron-down"></i> عرض المزيد (${catData.items.length - PREVIEW_COUNT} إضافي)`;
+        btn.onclick = () => renderCategory(catData, !fullView);
         pageContent.appendChild(btn);
     }
 }
 
-/* ---- Display page ---- */
 function displayPage(idx) {
     if (idx < 0 || idx >= allCategories.length) return;
-    animatePage(() => {
-        currentPageIndex = idx;
-        renderCategory(allCategories[idx]);
-        updateNav();
-    });
+    currentPageIndex = idx;
+    renderCategory(allCategories[idx]);
+    updateNav();
 }
 
-/* ---- Navigation UI ---- */
 function updateNav() {
     const total = allCategories.length;
     const isFirst = currentPageIndex === 0;
@@ -843,110 +682,107 @@ function updateNav() {
 
     prevBtn.disabled = isFirst;
     nextBtn.disabled = isLast;
-
-    // progress
-    const pct = total <= 1 ? 0 : (currentPageIndex / (total - 1)) * 100;
-    progressFill.style.width = pct + '%';
+    progressFill.style.width = total <= 1 ? '0%' : (currentPageIndex / (total - 1)) * 100 + '%';
 
     if (isFirst) {
-        pageInfoEl.innerHTML = 'القائمة الرئيسية';
-        prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i> السابق';
+        pageInfoEl.innerHTML = 'الرئيسية';
         indexBtn.style.display = 'none';
     } else {
         pageInfoEl.innerHTML = `${currentPageIndex} / ${total - 1}`;
         indexBtn.style.display = 'inline-flex';
-        const prevName = currentPageIndex === 1 ? 'الفهرس' : allCategories[currentPageIndex - 1].categoryName;
-        prevBtn.innerHTML = `<i class="fas fa-chevron-right"></i> ${prevName.length > 8 ? 'السابق' : prevName}`;
-    }
-
-    if (!isLast) {
-        const nextName = allCategories[currentPageIndex + 1].categoryName;
-        nextBtn.innerHTML = `${nextName.length > 8 ? 'التالي' : nextName} <i class="fas fa-chevron-left"></i>`;
-    } else {
-        nextBtn.innerHTML = 'النهاية <i class="fas fa-check"></i>';
     }
 }
 
-/* ---- Events ---- */
 prevBtn.onclick  = () => displayPage(currentPageIndex - 1);
 nextBtn.onclick  = () => displayPage(currentPageIndex + 1);
 indexBtn.onclick = () => displayPage(0);
 
-pageContent.addEventListener('scroll', () => {
-    scrollTopBtn.style.display = pageContent.scrollTop > 120 ? 'flex' : 'none';
-});
-
-scrollTopBtn.onclick = () => pageContent.scrollTop = 0;
-
-/* ---- Search ---- */
-let searchTimeout;
 searchInput.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
     const term = e.target.value.trim();
     clearSearch.style.display = term ? 'block' : 'none';
-    searchTimeout = setTimeout(() => handleSearch(term.toLowerCase()), 280);
-});
-
-clearSearch.onclick = () => {
-    searchInput.value = '';
-    clearSearch.style.display = 'none';
-    displayPage(currentPageIndex);
-    document.querySelector('.pagination-nav').style.display = 'flex';
-    document.querySelector('.social-bar').style.display = 'block';
-};
-
-function handleSearch(term) {
+    
     if (!term) {
+        autocompleteBox.style.display = 'none';
         displayPage(currentPageIndex);
-        document.querySelector('.pagination-nav').style.display = 'flex';
-        document.querySelector('.social-bar').style.display = 'block';
         return;
     }
 
-    document.querySelector('.pagination-nav').style.display = 'none';
-    document.querySelector('.social-bar').style.display = 'none';
+    const cleanedTerm = cleanText(term);
+    const filtered = [];
 
-    const filtered = allData.filter(item => {
+    allData.forEach(item => {
         const nk = findKey(item, 'الصنف');
         const ck = findKey(item, 'التصنيف');
-        return (nk && item[nk] && item[nk].toLowerCase().includes(term))
-            || (ck && item[ck] && item[ck].toLowerCase().includes(term));
+        const nameText = item[nk] ? item[nk] : '';
+        const catText = item[ck] ? item[ck] : '';
+
+        if (cleanText(nameText).includes(cleanedTerm) || cleanText(catText).includes(cleanedTerm)) {
+            const pk = findKey(item, 'السعر');
+            const uk = findKey(item, 'الوحدة');
+            const gk = findKey(item, 'العبوة');
+            filtered.push({
+                name: nameText.trim(),
+                price: pk ? item[pk].trim() : '',
+                unit: uk ? item[uk].trim() : '',
+                pkg: gk ? item[gk].trim() : '',
+                categoryName: catText.trim()
+            });
+        }
     });
 
-    pageContent.innerHTML = '';
+    showAutocomplete(filtered, term);
+    handleSearchRender(filtered, term);
+});
 
-    if (!filtered.length) {
-        pageContent.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search-minus"></i>
-                <p>لا توجد نتائج لـ "<strong>${term}</strong>"</p>
-            </div>`;
+function showAutocomplete(matches, originalTerm) {
+    if (matches.length === 0) {
+        autocompleteBox.style.display = 'none';
+        return;
+    }
+    autocompleteBox.innerHTML = '';
+    matches.slice(0, 4).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.innerHTML = `<span>${item.name}</span> <span class="suggestion-cat">${item.categoryName}</span>`;
+        div.onclick = () => {
+            searchInput.value = item.name;
+            autocompleteBox.style.display = 'none';
+            handleSearchRender([item], item.name);
+        };
+        autocompleteBox.appendChild(div);
+    });
+    autocompleteBox.style.display = 'block';
+}
+
+function handleSearchRender(results, term) {
+    pageContent.innerHTML = '';
+    if (!results.length) {
+        pageContent.innerHTML = `<div class="no-results"><i class="fas fa-search-minus"></i><p>لا توجد نتائج لـ "<strong>${term}</strong>"</p></div>`;
         return;
     }
 
-    const hdr = buildCatHeader(`نتائج البحث: "${term}"`, filtered.length + ' نتيجة', 'fa-search');
+    const hdr = buildCatHeader(`نتائج البحث عن: "${term}"`, results.length + ' نتيجة', 'fa-search');
     pageContent.appendChild(hdr);
 
     const grid = document.createElement('div');
     grid.className = 'items-grid';
-
-    filtered.forEach(item => {
-        const nk = findKey(item, 'الصنف');
-        const pk = findKey(item, 'السعر');
-        const uk = findKey(item, 'الوحدة');
-        const pgk= findKey(item, 'العبوة');
-        grid.appendChild(buildItemCard({
-            name:  item[nk] ? item[nk].trim() : '',
-            price: pk  && item[pk]  ? item[pk].trim()  : null,
-            unit:  uk  && item[uk]  ? item[uk].trim()  : null,
-            pkg:   pgk && item[pgk] ? item[pgk].trim() : null,
-        }));
-    });
-
+    results.forEach(item => grid.appendChild(buildItemCard(item, true)));
     pageContent.appendChild(grid);
 }
 
-/* ---- Fetch ---- */
+clearSearch.onclick = () => {
+    searchInput.value = '';
+    clearSearch.style.display = 'none';
+    autocompleteBox.style.display = 'none';
+    displayPage(currentPageIndex);
+};
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrap')) {
+        autocompleteBox.style.display = 'none';
+    }
+});
+
 Papa.parse(sheetURL, {
     download: true,
     header: true,
@@ -954,14 +790,10 @@ Papa.parse(sheetURL, {
     complete(results) {
         allData = results.data;
         processData(allData);
-        if (allCategories.length > 1) {
-            displayPage(0);
-        } else {
-            pageContent.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-mid)">لا توجد بيانات للعرض.</div>';
-        }
+        if (allCategories.length > 1) displayPage(0);
     },
     error() {
-        pageContent.innerHTML = '<div style="padding:40px;text-align:center;color:#c0392b"><i class="fas fa-exclamation-triangle"></i> خطأ في تحميل البيانات</div>';
+        pageContent.innerHTML = '<div style="padding:40px;text-align:center;color:#c0392b"><i class="fas fa-exclamation-triangle"></i> خطأ في الاتصال بقاعدة البيانات</div>';
     }
 });
 </script>
