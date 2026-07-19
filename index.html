@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jana Gold — قائمة الأسعار وسلة المشتريات 1448 هـ</title>
+<title>Jana Gold — نظام الطلبات الاحترافي 1448 هـ</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -23,10 +23,6 @@
     --dark-text: #FAF7F2;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     font-family: 'Tajawal', sans-serif;
     background: var(--cream);
@@ -34,7 +30,6 @@
     min-height: 100vh;
     padding-bottom: 80px;
     overflow-x: hidden;
-    overflow-y: auto;
   }
 
   /* ── HEADER ── */
@@ -47,59 +42,14 @@
     gap: 2rem;
   }
 
-  .header-text-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .masthead-issue {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-
-  .masthead-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--ink);
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-
-  .masthead-title em {
-    font-style: italic;
-    color: var(--gold);
-  }
-
-  .tagline-ar {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #5C4A1E;
-    font-style: italic;
-    margin-top: 2px;
-  }
-
-  .stats-line {
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 1px;
-  }
-
-  .logo-box {
-    width: 110px;
-    height: 110px;
-  }
-
-  .brand-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+  .header-text-stack { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .masthead-issue { font-size: 10px; letter-spacing: 3px; color: var(--gold); font-weight: 500; }
+  .masthead-title { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; color: var(--ink); line-height: 1; }
+  .masthead-title em { font-style: italic; color: var(--gold); }
+  .tagline-ar { font-size: 1.1rem; font-weight: 500; color: #5C4A1E; font-style: italic; }
+  .stats-line { font-size: 12px; color: var(--muted); }
+  .logo-box { width: 110px; height: 110px; }
+  .brand-logo { width: 100%; height: 100%; object-fit: contain; }
 
   /* ── PROGRESS BAR ── */
   #progress-bar { height: 3px; background: var(--rule); }
@@ -110,1034 +60,352 @@
     padding: .85rem 2rem;
     background: var(--cream);
     border-bottom: 1px solid var(--rule);
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 12px;
   }
 
   .search-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    max-width: 500px;
-    border: 1px solid var(--gold-lt);
-    border-radius: 2px;
-    padding: 8px 14px;
-    background: var(--white);
-    position: relative;
+    display: flex; align-items: center; gap: 10px; flex: 1; max-width: 500px;
+    border: 1px solid var(--gold-lt); padding: 8px 14px; background: var(--white); position: relative;
   }
 
-  .search-inner input {
-    border: none;
-    outline: none;
-    font-family: 'Tajawal', sans-serif;
-    font-size: .95rem;
-    background: transparent;
-    color: var(--ink-mid);
-    flex: 1;
-  }
-
-  .search-inner input::placeholder { color: #B0A080; }
-  .si-icon { color: var(--gold); font-size: 14px; }
-
-  #clearSearch {
-    background: none;
-    border: none;
-    color: var(--gold);
-    cursor: pointer;
-    font-size: 14px;
-    display: none;
-    padding: 0;
-  }
+  .search-inner input { border: none; outline: none; font-family: 'Tajawal', sans-serif; font-size: .95rem; background: transparent; color: var(--ink-mid); flex: 1; }
+  .si-icon { color: var(--gold); }
+  #clearSearch { background: none; border: none; color: var(--gold); cursor: pointer; display: none; }
 
   .autocomplete-box {
-    position: absolute;
-    top: 100%;
-    right: 0; left: 0;
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-top: none;
-    z-index: 30;
-    display: none;
-    max-height: 220px;
-    overflow-y: auto;
+    position: absolute; top: 100%; right: 0; left: 0; background: var(--white); border: 1px solid var(--rule); z-index: 30; display: none; max-height: 220px; overflow-y: auto;
   }
-
-  .auto-item {
-    padding: 10px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    border-bottom: 1px solid var(--rule);
-    font-size: .9rem;
-  }
-
+  .auto-item { padding: 10px 14px; display: flex; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--rule); font-size: .9rem; }
   .auto-item:hover { background: var(--gold-bg); }
-  .auto-cat { font-size: .72rem; color: var(--gold); background: var(--gold-bg); padding: 2px 7px; }
 
   /* ── NAV TABS ── */
-  .nav-strip {
-    display: flex;
-    border-bottom: 2px solid var(--ink);
-    padding: 0 2rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .nav-strip::-webkit-scrollbar { display: none; }
-
-  .nav-tab {
-    padding: .6rem 1.1rem;
-    font-family: 'Tajawal', sans-serif;
-    font-size: .78rem;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    white-space: nowrap;
-    transition: color .2s, border-color .2s;
-  }
-
+  .nav-strip { display: flex; border-bottom: 2px solid var(--ink); padding: 0 2rem; overflow-x: auto; scrollbar-width: none; }
+  .nav-tab { padding: .6rem 1.1rem; font-size: .78rem; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: transparent; border-bottom: 3px solid transparent; white-space: nowrap; }
   .nav-tab.active { color: var(--ink); border-bottom-color: var(--gold); }
-  .nav-tab:hover  { color: var(--ink); }
 
   /* ── PAGE BODY ── */
-  #page-content {
-    padding: 1.75rem 2rem;
-    min-height: 400px;
-  }
-
-  /* ── LOADING ── */
-  .loading-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 80px 0;
-    color: var(--muted);
-    font-size: .95rem;
-  }
-
-  .choco-loader { display: flex; gap: 5px; }
-
-  .choco-dot {
-    width: 9px; height: 9px;
-    border-radius: 2px;
-    background: var(--gold);
-    animation: chocoWave 1.2s ease-in-out infinite;
-  }
-
-  .choco-dot:nth-child(2) { animation-delay: .15s; }
-  .choco-dot:nth-child(3) { animation-delay: .3s;  }
-
-  @keyframes chocoWave {
-    0%,80%,100% { transform: translateY(0) scale(1);   opacity: .5; }
-    40%          { transform: translateY(-5px) scale(1.2); opacity: 1; }
-  }
-
-  /* ── EYEBROW ── */
-  .section-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 1.25rem;
-  }
-
-  .eyebrow-line { flex: 1; height: 1px; background: var(--rule); }
-
-  .eyebrow-text {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold);
-    white-space: nowrap;
-    font-weight: 500;
-  }
+  #page-content { padding: 1.75rem 2rem; min-height: 400px; }
 
   /* ── INDEX GRID ── */
-  .editorial-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--rule);
-    margin-bottom: 0;
-  }
+  .section-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; }
+  .eyebrow-line { flex: 1; height: 1px; background: var(--rule); }
+  .eyebrow-text { font-size: 10px; letter-spacing: 3px; color: var(--gold); white-space: nowrap; }
 
-  .cat-block {
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    cursor: pointer;
-    position: relative;
-    transition: transform .3s, box-shadow .3s;
-    overflow: hidden;
-    height: 130px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
-  }
-
-  .cat-block:nth-child(3n) { border-right: none; }
-  .cat-block:nth-last-child(-n+3) { border-bottom: none; }
-
-  .cat-block:hover { transform: scale(1.02); box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 2; }
+  .editorial-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); }
+  .cat-block { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); cursor: pointer; position: relative; height: 130px; display: flex; align-items: flex-end; overflow: hidden; }
   .cat-block:hover .cat-bg-img { transform: scale(1.08); }
+  .cat-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .cat-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,8,4,0.88) 40%, rgba(10,8,4,0.15) 100%); }
+  .cat-info { position: relative; z-index: 2; padding: .85rem 1rem; color: #fff; }
+  .cat-name { font-size: 1.1rem; font-weight: 700; }
 
-  .cat-bg-img {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .4s ease;
-  }
-
-  .cat-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10,8,4,0.88) 40%, rgba(10,8,4,0.15) 100%);
-  }
-
-  .cat-info {
-    position: relative;
-    z-index: 2;
-    padding: .85rem 1rem 2rem;
-  }
-
-  .cat-number {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    color: rgba(201,184,122,0.35);
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .cat-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #FAF7F2;
-    margin-bottom: 3px;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-  }
-
-  .cat-count-label { font-size: .68rem; color: var(--gold-lt); letter-spacing: 1px; }
-
-  .cat-arrow {
-    position: absolute;
-    bottom: .75rem;
-    left: .85rem;
-    color: var(--gold-lt);
-    font-size: 13px;
-    z-index: 2;
-  }
-
-  /* ── BEST SELLERS DARK PANEL ── */
-  .best-panel {
-    background: var(--dark-bg);
-    color: var(--dark-text);
-    padding: 1.5rem;
-    border: 1px solid #3A3020;
-    margin-bottom: 0;
-  }
-
-  .best-label {
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold-lt);
-    margin-bottom: 10px;
-    font-weight: 500;
-  }
-
-  .best-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .best-item-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #3A3020;
-  }
-
-  .best-item-row:last-child { border-bottom: none; }
-  .best-item-name { font-size: .9rem; color: #E8DFC0; }
-
-  .best-item-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--gold-lt);
-  }
-
-  .best-item-price span { font-size: .68rem; font-family: 'Tajawal', sans-serif; }
-
-  .best-pkg {
-    font-size: .7rem;
-    color: #9A8A60;
-    margin-right: 8px;
-  }
-
-  /* ── ITEMS LIST ── */
-  .cat-header-bar {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 1.25rem;
-    padding-bottom: .75rem;
-    border-bottom: 2px solid var(--ink);
-  }
-
-  .cat-header-bar .ch-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--ink);
-  }
-
-  .cat-header-bar .ch-count {
-    font-size: .75rem;
-    color: var(--muted);
-    letter-spacing: 1px;
-  }
-
+  /* ── TABLES ── */
+  .cat-header-bar { display: flex; align-items: baseline; gap: 12px; margin-bottom: 1.25rem; border-bottom: 2px solid var(--ink); padding-bottom: .75rem; }
+  .cat-header-bar .ch-title { font-size: 1.8rem; font-weight: 700; }
   .items-table { width: 100%; border-collapse: collapse; }
   .items-table thead tr { border-bottom: 1px solid var(--ink); }
-
-  .items-table thead th {
-    font-size: .7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 500;
-    padding: 6px 8px;
-    text-align: right;
-  }
-
-  .items-table thead th:last-child { text-align: left; }
-
-  .items-table tbody tr {
-    border-bottom: 1px solid var(--rule);
-    transition: background .15s;
-  }
-
-  .items-table tbody tr:hover { background: var(--gold-bg); }
-
-  .items-table td { padding: 12px 8px; vertical-align: middle; }
-
-  .td-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
-
-  .td-pkg {
-    font-size: .72rem;
-    color: var(--gold);
-    background: var(--gold-bg);
-    padding: 2px 8px;
-    display: inline-block;
-    margin-top: 3px;
-  }
-
-  .td-unit { font-size: .78rem; color: var(--muted); }
-
-  .td-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--gold);
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  .td-price span { font-size: .65rem; font-family: 'Tajawal', sans-serif; color: var(--muted); }
-
-  .td-actions { text-align: left; white-space: nowrap; }
-
-  /* أزرار إضافة وتعديل الكمية المباشرة داخل الجدول */
-  .qty-controls-row {
+  .items-table th { font-size: .75rem; color: var(--muted); padding: 8px; text-align: right; }
+  .items-table td { padding: 12px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+  
+  /* حقل الكمية الرقمي الجديد المتطور */
+  .qty-input-wrapper {
     display: inline-flex;
     align-items: center;
     background: var(--white);
     border: 1px solid var(--gold-lt);
-    border-radius: 2px;
     padding: 2px;
+    width: 90px;
   }
-  .qty-row-btn {
-    background: transparent;
-    border: none;
-    color: var(--gold);
-    width: 26px; height: 26px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    transition: background .15s;
-  }
-  .qty-row-btn:hover { background: var(--gold-bg); }
-  .qty-row-val {
-    font-size: 13px; font-weight: bold; width: 26px; text-align: center; color: var(--ink);
-  }
-
-  .act-pill {
-    font-size: 11px;
-    padding: 6px 9px;
-    border: 1px solid var(--gold-lt);
-    background: transparent;
-    color: var(--gold);
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    margin-right: 4px;
-    text-decoration: none;
-    display: inline-block;
-    transition: all .15s;
-  }
-
-  .act-pill:hover { background: var(--gold); color: var(--white); border-color: var(--gold); }
-
-  .toggle-more-btn {
+  .qty-input-field {
     width: 100%;
-    margin-top: 1rem;
-    padding: 10px;
-    border: 1px dashed var(--rule);
-    background: transparent;
-    color: var(--gold);
-    font-family: 'Tajawal', sans-serif;
-    font-size: .85rem;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: background .2s;
-  }
-
-  .toggle-more-btn:hover { background: var(--gold-bg); }
-
-  /* ── SEARCH RESULTS ── */
-  .search-badge {
-    font-size: .7rem;
-    background: var(--gold);
-    color: var(--white);
-    padding: 2px 7px;
-    margin-bottom: 3px;
-    display: inline-block;
-  }
-
-  .no-results {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-
-  .no-results i { font-size: 2rem; margin-bottom: 12px; display: block; color: var(--rule); }
-
-  /* ── PAGINATION ── */
-  .pagination-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 2rem;
-    background: var(--ink);
-    border-top: 1px solid #3A3020;
-  }
-
-  .nav-btn {
-    background: transparent;
-    border: 1px solid var(--gold-lt);
-    color: var(--gold-lt);
-    padding: 8px 16px;
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    font-size: .85rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    transition: all .2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .nav-btn:hover:not(:disabled) { background: var(--gold); color: var(--white); border-color: var(--gold); }
-  .nav-btn:disabled { opacity: .3; cursor: not-allowed; }
-
-  .nav-center { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  #pageInfo { color: var(--gold-lt); font-size: .8rem; letter-spacing: 2px; }
-
-  #indexBtn {
-    background: transparent;
     border: none;
-    color: var(--gold-lt);
-    font-size: .75rem;
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    letter-spacing: 1px;
-    display: none;
+    outline: none;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--ink);
+    background: transparent;
   }
 
-  #indexBtn:hover { color: var(--white); }
-
-  /* ── TOAST ── */
-  #toast {
-    position: fixed;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--ink);
-    color: var(--gold-lt);
-    padding: 8px 20px;
-    font-size: .85rem;
-    opacity: 0;
-    transition: opacity .3s;
-    z-index: 999;
-    border: 1px solid var(--gold);
-    letter-spacing: 1px;
-  }
-
-  #toast.show { opacity: 1; }
-
-  /* ── SOCIAL BAR ── */
-  .social-bar {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--ink);
-    border-top: 1px solid #3A3020;
-    padding: 10px 0;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 100;
-  }
-
-  .social-bar a {
-    color: var(--gold-lt);
-    font-size: 1.2rem;
-    transition: color .2s;
-  }
-
-  .social-bar a:hover { color: var(--white); }
-
-  /* ── DARK MODE TOGGLE ── */
-  #darkModeToggle {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 50;
-    background: var(--white);
-    border: 1px solid var(--rule);
-    color: var(--gold);
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* ── سلة المشتريات الافتراضية ── */
+  /* ── CART DRAWER ── */
   .floating-cart-btn {
-    position: fixed;
-    bottom: 70px;
-    right: 20px;
-    background: #25d366;
-    color: #fff;
-    border: 2px solid var(--white);
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200;
-    transition: transform .2s;
+    position: fixed; bottom: 70px; right: 20px;
+    background: var(--gold); color: #fff; border: 2px solid var(--white);
+    width: 56px; height: 56px; border-radius: 50%; font-size: 20px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; z-index: 200;
   }
-  .floating-cart-btn:hover { transform: scale(1.08); }
-  .cart-count-badge {
-    position: absolute; top: -4px; right: -4px;
-    background: red; color: #fff; border-radius: 50%;
-    padding: 2px 6px; font-size: 11px; font-weight: bold;
-    min-width: 18px; text-align: center;
-  }
-
-  /* نافذة السلة الجانبية */
-  .cart-drawer-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); z-index: 1001;
-  }
-  .cart-drawer {
-    position: fixed; top: 0; bottom: 0; left: 0;
-    width: 100%; max-width: 460px;
-    background: var(--cream);
-    color: var(--ink-mid);
-    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
-    z-index: 1002;
-    display: flex; flex-direction: column;
-    transition: transform .3s ease-in-out;
-  }
-  .cart-header {
-    padding: 1.5rem; border-bottom: 1px solid var(--rule);
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--ink); color: var(--gold-lt);
-  }
-  .cart-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
-  .close-cart-btn { background: transparent; border: none; color: var(--gold-lt); font-size: 1.2rem; cursor: pointer; }
+  .cart-count-badge { position: absolute; top: -4px; right: -4px; background: red; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 11px; font-weight: bold; }
   
+  .cart-drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1001; }
+  .cart-drawer { position: fixed; top: 0; bottom: 0; left: 0; width: 100%; max-width: 480px; background: var(--cream); box-shadow: 4px 0 20px rgba(0,0,0,0.3); z-index: 1002; display: flex; flex-direction: column; transition: transform .3s ease-in-out; }
+  .cart-header { padding: 1.5rem; background: var(--ink); color: var(--gold-lt); display: flex; justify-content: space-between; align-items: center; }
   .cart-items-list { flex: 1; overflow-y: auto; padding: 1.5rem; }
-  .cart-drawer-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid var(--rule);
-  }
-  .cart-drawer-item-info h4 { font-size: 0.95rem; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
-  .cart-drawer-item-info p { font-size: 0.8rem; color: var(--muted); }
   
+  .cart-drawer-item { padding: 12px 0; border-bottom: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
+  .cart-item-top { display: flex; justify-content: space-between; font-weight: bold; color: var(--ink); }
+  .cart-item-details { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); }
+
   .cart-footer { padding: 1.5rem; border-top: 1px solid var(--rule); background: var(--white); }
-  .cart-total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; color: var(--ink); }
+  .cart-total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--ink); }
   
   .cart-form-group { margin-bottom: 12px; }
-  .cart-form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: 500; color: var(--ink-mid); }
-  .cart-form-group input, .cart-form-group select {
-    width: 100%; padding: 10px; border: 1px solid var(--gold-lt); border-radius: 2px;
-    font-family: 'Tajawal', sans-serif; font-size: 0.9rem; background: var(--cream); color: var(--ink-mid);
-  }
+  .cart-form-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: 500; }
+  .cart-form-group input { width: 100%; padding: 10px; border: 1px solid var(--gold-lt); background: var(--cream); }
+  
   .send-order-btn {
-    width: 100%; padding: 12px; background: #25d366; color: #fff; border: none;
-    border-radius: 2px; font-family: 'Tajawal', sans-serif; font-size: 1rem; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    box-shadow: 0 4px 10px rgba(37,211,102,0.2);
+    width: 100%; padding: 14px; background: var(--gold); color: #fff; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .send-order-btn:hover { background: #20ba5a; }
+
+  /* ── TOAST & UTILS ── */
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--gold-lt); padding: 8px 20px; opacity: 0; transition: opacity .3s; z-index: 999; }
+  #toast.show { opacity: 1; }
+  .pagination-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 2rem; background: var(--ink); color: #fff; }
+  .nav-btn { background: transparent; border: 1px solid var(--gold-lt); color: var(--gold-lt); padding: 6px 12px; cursor: pointer; }
 
   /* ── DARK MODE ── */
   body.dark-mode {
-    --ink:      #FAF7F2;
-    --ink-mid:  #E8DFC0;
-    --gold:     #C9B87A;
-    --gold-lt:  #8B6914;
-    --gold-bg:  #2A2010;
-    --cream:    #121008;
-    --rule:     #3A3020;
-    --muted:    #9A8A60;
-    --white:    #1E180A;
-    --dark-bg:  #0A0804;
-    --dark-text:#FAF7F2;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .jana-header { padding: 1.5rem 1rem; gap: 1rem; }
-    .masthead-title { font-size: 2.2rem; }
-    .logo-box { width: 170px; height: 90px; padding: 1px; }
-    .tagline-ar { font-size: 0.95rem; }
-    .stats-line { font-size: 11px; }
-    .editorial-grid { grid-template-columns: 1fr 1fr; }
-    #page-content { padding: 1rem; }
-    .items-table td { padding: 9px 5px; }
-    .act-pill { display: none; }
-    .pagination-nav { padding: 10px 1rem; }
-    .floating-cart-btn { bottom: 65px; right: 15px; }
+    --ink: #FAF7F2; --ink-mid: #E8DFC0; --gold: #C9B87A; --gold-lt: #8B6914; --gold-bg: #2A2010; --cream: #121008; --rule: #3A3020; --white: #1E180A;
   }
 </style>
 </head>
 <body>
 
-<button id="darkModeToggle" title="الوضع الليلي">🌙</button>
+<button id="darkModeToggle" style="position:fixed; top:12px; left:12px; z-index:50; background:#fff; border:1px solid #ccc; width:36px; height:36px; border-radius:50%; cursor:pointer;">🌙</button>
 <div id="toast"></div>
-
 <div id="progress-bar"><div id="progress-fill"></div></div>
 
 <header class="jana-header">
   <div class="header-text-stack">
-    <div class="masthead-issue">2026 م / 1448 هـ </div>
+    <div class="masthead-issue">2026 م / 1448 هـ</div>
     <div class="masthead-title">Jana <em>Gold</em></div>
     <div class="tagline-ar">حلاوة حلاوتنا</div>
-    <div class="stats-line" id="statsLine">جاري التحميل...</div>
-  </div>
-
-  <div class="logo-box">
-    <img src="logo.png" alt="Jana Gold Logo" class="brand-logo" onerror="this.parentNode.style.display='none'">
+    <div class="stats-line" id="statsLine">جاري المزامنة مع المخزن الرئيسي...</div>
   </div>
 </header>
 
 <div class="search-bar">
   <div class="search-inner">
     <i class="fas fa-search si-icon"></i>
-    <input type="text" id="searchInput" placeholder="نفسك في إيه؟ ابحث هنا..." autocomplete="off">
-    <button id="clearSearch"><i class="fas fa-times"></i></button>
-    <div class="autocomplete-box" id="autocompleteBox"></div>
+    <input type="text" id="searchInput" placeholder="ابحث عن الحلوى المفضل لديك هنا...">
   </div>
 </div>
 
-<nav class="nav-strip" id="navStrip" aria-label="أقسام المنيو">
-  <button class="nav-tab active" data-idx="0">الكل</button>
-</nav>
+<nav class="nav-strip" id="navStrip"></nav>
+<div id="page-content"></div>
 
-<div id="page-content">
-  <div class="loading-wrap">
-    <span>جاري تحضير الحلوى</span>
-    <div class="choco-loader">
-      <div class="choco-dot"></div>
-      <div class="choco-dot"></div>
-      <div class="choco-dot"></div>
-    </div>
-  </div>
-</div>
-
-<!-- زر السلة العائم -->
+<!-- السلة العائمة والنافذة الجانبية -->
 <button class="floating-cart-btn" onclick="toggleCartDrawer()">
   <i class="fas fa-shopping-bag"></i>
   <span class="cart-count-badge" id="cartCountBadge">0</span>
 </button>
 
-<!-- واجهة السلة المنبثقة -->
 <div class="cart-drawer-overlay" id="cartDrawerOverlay" onclick="toggleCartDrawer()"></div>
 <div class="cart-drawer" id="cartDrawer" style="transform: translateX(-100%);">
   <div class="cart-header">
-    <h3>سلة الطلبات 🛒</h3>
-    <button class="close-cart-btn" onclick="toggleCartDrawer()"><i class="fas fa-times"></i></button>
+    <h3>سلة طلباتك الإجمالية</h3>
+    <button style="background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer;" onclick="toggleCartDrawer()">&times;</button>
   </div>
-  
-  <div class="cart-items-list" id="cartItemsList">
-    <!-- المنتجات تضاف هنا ديناميكياً -->
-  </div>
-  
+  <div class="cart-items-list" id="cartItemsList"></div>
   <div class="cart-footer">
     <div class="cart-total-row">
-      <span>إجمالي الحساب:</span>
+      <span>إجمالي الحساب الفاتورة:</span>
       <span><span id="cartTotalValue">0</span> ج.م</span>
     </div>
-    
     <div class="cart-form-group">
-      <label for="custName">اسم العميل الكريم:</label>
-      <input type="text" id="custName" placeholder="أدخل اسمك بالكامل">
+      <label>اسم العميل / المؤسسة:</label>
+      <input type="text" id="custName" placeholder="اكتب الاسم هنا لتسجيل الفاتورة">
     </div>
-    
-    <div class="cart-form-group">
-      <label for="branchSelect">إرسال الطلب لفرع:</label>
-      <select id="branchSelect">
-        <!-- ضع أرقام الهواتف مسبوقة بكود الدولة بدون علامة + -->
-        <option value="201227201188">الفرع الرئيسي والمبيعات (01227201188)</option>
-        <option value="201000000000">فرع القاهرة (01000000000)</option>
-        <option value="201100000000">فرع الجيزة (01100000000)</option>
-      </select>
-    </div>
-    
-    <button class="send-order-btn" onclick="submitFinalOrder()">
-      تأكيد وتصدير عبر الواتساب <i class="fab fa-whatsapp"></i>
+    <button class="send-order-btn" onclick="submitFinalOrderToSheet()">
+      تصدير وحفظ الفاتورة لجوجل شيت <i class="fas fa-cloud-upload-alt"></i>
     </button>
   </div>
 </div>
 
 <div class="pagination-nav">
-  <button id="prevBtn" class="nav-btn" disabled><i class="fas fa-chevron-right"></i> السابق</button>
-  <div class="nav-center">
-    <div id="pageInfo"></div>
-    <button id="indexBtn">↩ الفهرس</button>
-  </div>
-  <button id="nextBtn" class="nav-btn" disabled>التالي <i class="fas fa-chevron-left"></i></button>
-</div>
-
-<div class="social-bar">
-  <a href="https://www.facebook.com/share/16RQhUBg3B/" title="فيسبوك" target="_blank"><i class="fab fa-facebook-f"></i></a>
-  <a href="https://wa.me/+201227201188" title="واتساب" target="_blank"><i class="fab fa-whatsapp"></i></a>
-  <a href="https://www.instagram.com/nazee_al_attar?igsh=djc4MmhrNm1pdjhh" title="إنستجرام" target="_blank"><i class="fab fa-instagram"></i></a>
-  <a href="https://t.me/+TDjFEhC9WXcxZjNk" title="تليجرام" target="_blank"><i class="fab fa-telegram"></i></a>
-  <a href="tel:+201227201188" title="اتصل بنا"><i class="fas fa-phone-alt"></i></a>
+  <button id="prevBtn" class="nav-btn">السابق</button>
+  <span id="pageInfo"></span>
+  <button id="nextBtn" class="nav-btn">التالي</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 <script>
 // ══════════════════════════════════════════
-// CONFIG — غيّر روابط الشيت والـ Web App هنا
+// CONFIG
 // ══════════════════════════════════════════
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGoyAsNR0JPLb2TQNSDI55YiWFCV0b5bRAmUTsWJxLvjCL_wA-NuoK2_OCCPggtjQ7eI_1JsXxvxlX/pub?output=csv';
-// استبدل الرابط أدناه برابط Google Apps Script Web App بعد نشره كما شرحنا مسبقاً
+// ضع رابط الـ Apps Script المخصص لاستقبال البيانات الكاملة هنا
 const GOOGLE_APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL'; 
 
-const PREVIEW = 8;
+let allData = [];
+let allCats = [];
+let currentIdx = 0;
+let cart = []; // محتويات السلة
 
-// ── refs ──
-const pageContent = document.getElementById('page-content');
-const searchInput  = document.getElementById('searchInput');
-const clearSearch  = document.getElementById('clearSearch');
-const autoBox      = document.getElementById('autocompleteBox');
-const prevBtn      = document.getElementById('prevBtn');
-const nextBtn      = document.getElementById('nextBtn');
-const indexBtn     = document.getElementById('indexBtn');
-const pageInfoEl   = document.getElementById('pageInfo');
-const progressFill = document.getElementById('progress-fill');
-const toastEl      = document.getElementById('toast');
-const navStrip     = document.getElementById('navStrip');
-const statsLine    = document.getElementById('statsLine');
-const darkBtn      = document.getElementById('darkModeToggle');
-
-let allData      = [];
-let allCats      = [];
-let currentIdx   = 0;
-
-// مصفوفة سلة المشتريات الافتراضية
-let cart = [];
-
-// ── dark mode ──
-darkBtn.onclick = () => {
-  document.body.classList.toggle('dark-mode');
-  darkBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-};
-
-// ── helpers ──
+// دالة العثور على الأعمدة بشكل مرن
 function fk(item, label) {
   for (const k in item) if (k && k.trim() === label) return k;
   return null;
 }
 
-function cleanText(s) {
-  return (s||'').toLowerCase()
-    .replace(/[أإآا]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').trim();
-}
-
-function showToast(msg) {
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  setTimeout(() => toastEl.classList.remove('show'), 2000);
-}
-
-// ── category images ──
-const catImages = {
-  'علف':    'alaf.jpeg',
-  'مدور':   'mdawar.jpeg',
-  'ملبن':   'malban.jpeg',
-  'قشطة':   'qeshta.jpeg',
-  'بولا':   'baula.jpeg',
-  'مربي':   'mraba.jpeg',
-  'فوااخر': 'fwagher.jpeg',
-  'معبأ':   'moaba.jpeg',
-  'نوجا':   'noga.jpeg',
-  'شكلمة':  'shklama.jpg',
-  'default': 'logo.png'
+// تحديث الوضع الليلي
+document.getElementById('darkModeToggle').onclick = () => {
+  document.body.classList.toggle('dark-mode');
 };
 
-function getCatImg(name) {
-  for (const [k, v] of Object.entries(catImages)) {
-    if (name.includes(k)) return v;
-  }
-  return catImages['default'];
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── process CSV ──
+// معالجة البيانات القادمة من الشيت الرئيسي
 function processData(data) {
   const map = {};
-  const best = [];
-  let total = 0;
-
   data.forEach(row => {
-    const cat   = (row[fk(row,'التصنيف')]||'').trim();
-    const name  = (row[fk(row,'الصنف')]||'').trim();
-    const price = (row[fk(row,'السعر')]||'').trim();
-    const unit  = (row[fk(row,'الوحدة')]||'').trim();
-    const pkg   = (row[fk(row,'العبوة')]||'').trim();
-    const code  = (row[fk(row,'كود الصنف')] || row[fk(row,'الكود')] || '').trim();
-    const isBest= (row[fk(row,'الأكثر مبيعاً')]||'').trim().toLowerCase();
+    const cat = (row[fk(row,'التصنيف')]||'').trim();
+    const name = (row[fk(row,'الصنف')]||'').trim();
+    const price = parseFloat(row[fk(row,'السعر')]) || 0; // سعر الكيلو
+    const unit = (row[fk(row,'الوحدة')]||'').trim();
+    const pkg = (row[fk(row,'العبوة')]||'').trim();
+    const code = (row[fk(row,'كود الصنف')] || '').trim();
+    
+    // حساب وزن القطعة تلقائياً لاستخراج سعر القطعة الفعلي
+    // سنقوم باستخلاص الأرقام من عمود العبوة أو الوحدة (مثال: "علبة 0.5 كجم" أو "0.25")، وإذا لم يوجد نعتبر الوزن = 1
+    let unitWeight = 1; 
+    const weightMatch = (pkg + ' ' + unit).match(/([0-9.]+)\s*(كجم|كيلو|kg)/i);
+    if(weightMatch) {
+      unitWeight = parseFloat(weightMatch[1]) || 1;
+    } else {
+      // محاولة استخراج أي رقم عشري أو صحيح يعبر عن الوزن
+      const anyNum = (pkg + ' ' + unit).match(/[0-9.]+/);
+      if(anyNum) unitWeight = parseFloat(anyNum[0]) || 1;
+    }
 
     if (!cat || !name) return;
-    total++;
-    const obj = { name, price, unit, pkg, code, categoryName: cat };
+    const obj = { name, pricePerKilo: price, unit, pkg, code, unitWeight, categoryName: cat };
     if (!map[cat]) map[cat] = [];
     map[cat].push(obj);
-    if (['نعم','true','موافق'].includes(isBest)) best.push(obj);
   });
 
-  statsLine.textContent = `${total} صنف · ${Object.keys(map).length} قسم`;
-
-  const cats = Object.keys(map).filter(k => map[k].length).map(k => ({ categoryName: k, items: map[k] }));
-
   allCats = [{ categoryName: 'فهرس المنتجات', isIndex: true, items: [] }];
-  if (best.length) allCats.push({ categoryName: '⭐ الأكثر مبيعاً', items: best, isBest: true });
-  allCats.push(...cats);
-
+  Object.keys(map).forEach(k => allCats.push({ categoryName: k, items: map[k] }));
+  
   buildNavTabs();
   displayPage(0);
 }
 
-// ── build nav tabs ──
 function buildNavTabs() {
-  navStrip.innerHTML = '';
+  const strip = document.getElementById('navStrip');
+  strip.innerHTML = '';
   allCats.forEach((cat, i) => {
     const btn = document.createElement('button');
     btn.className = 'nav-tab' + (i === 0 ? ' active' : '');
-    btn.textContent = cat.isIndex ? 'الكل' : cat.categoryName;
-    btn.dataset.idx = i;
+    btn.textContent = cat.isIndex ? 'الكل الرئيسي' : cat.categoryName;
     btn.onclick = () => displayPage(i);
-    navStrip.appendChild(btn);
+    strip.appendChild(btn);
   });
 }
 
-// ── render index ──
-function renderIndex() {
-  pageContent.innerHTML = '';
+function displayPage(idx) {
+  currentIdx = idx;
+  const content = document.getElementById('page-content');
+  content.innerHTML = '';
 
-  const eyebrow = mkEyebrow('فهرس الأقسام');
-  pageContent.appendChild(eyebrow);
+  if (allCats[idx].isIndex) {
+    // عرض الفهرس والأقسام شبكياً
+    allCats.forEach((c, i) => {
+      if(c.isIndex) return;
+      const b = document.createElement('div');
+      b.className = 'cat-block';
+      b.innerHTML = `<div class="cat-overlay"></div><div class="cat-info"><div class="cat-name">${c.categoryName}</div></div>`;
+      b.onclick = () => displayPage(i);
+      content.appendChild(b);
+    });
+  } else {
+    // عرض جدول الأصناف للقسم المختار
+    const cat = allCats[idx];
+    const bar = document.createElement('div');
+    bar.className = 'cat-header-bar';
+    bar.innerHTML = `<div class="ch-title">${cat.categoryName}</div>`;
+    content.appendChild(bar);
 
-  const best = allCats.find(c => c.isBest);
-  if (best) {
-    const panel = document.createElement('div');
-    panel.className = 'best-panel';
-    panel.innerHTML = `
-      <div class="best-label">⭐ الأكثر مبيعاً</div>
-      <div class="best-title">أبرز الأصناف هذا الموسم</div>
-      ${best.items.slice(0,5).map(it => `
-        <div class="best-item-row">
-          <span class="best-item-name">
-            ${it.pkg ? `<span class="best-pkg">[${it.pkg}]</span>` : ''}
-            ${it.name}
-          </span>
-          <span class="best-item-price">${it.price||'—'} <span>ج.م</span></span>
-        </div>
-      `).join('')}
+    const table = document.createElement('table');
+    table.className = 'items-table';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>الصنف / الوزن</th>
+          <th>سعر الكيلو</th>
+          <th>سعر القطعة</th>
+          <th>الكمية المطلوبة</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
     `;
-    panel.style.cursor = 'pointer';
-    panel.onclick = () => displayPage(allCats.indexOf(best));
-    pageContent.appendChild(panel);
+    const tbody = table.querySelector('tbody');
+    cat.items.forEach(item => {
+      const tr = document.createElement('tr');
+      const piecePrice = item.pricePerKilo * item.unitWeight;
+      
+      // العثور على العنصر في السلة إن وجد لتحديد القيمة الحالية داخل حقل الإدخال
+      const cartItem = cart.find(c => c.name === item.name);
+      const currentQty = cartItem ? cartItem.qty : '';
+
+      tr.innerHTML = `
+        <td><strong>${item.name}</strong><br><small style="color:var(--gold);">${item.pkg || item.unit}</small></td>
+        <td>${item.pricePerKilo} ج.م</td>
+        <td><span style="color:var(--gold); font-weight:bold;">${piecePrice.toFixed(2)}</span> ج.م</td>
+        <td>
+          <div class="qty-input-wrapper">
+            <input type="number" min="0" step="any" class="qty-input-field" 
+                   value="${currentQty}" placeholder="0"
+                   oninput="updateQtyDirectly('${item.name.replace(/"/g, '&quot;')}', ${item.pricePerKilo}, ${item.unitWeight}, '${item.unit}', '${item.code}', this.value)">
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    content.appendChild(table);
   }
-
-  const eyebrow2 = mkEyebrow('الأقسام الرئيسية');
-  eyebrow2.style.marginTop = '1.5rem';
-  pageContent.appendChild(eyebrow2);
-
-  const grid = document.createElement('div');
-  grid.className = 'editorial-grid';
-
-  let n = 1;
-  allCats.forEach((cat, idx) => {
-    if (cat.isIndex || cat.isBest) return;
-    const block = document.createElement('div');
-    block.className = 'cat-block';
-    block.innerHTML = `
-      <img class="cat-bg-img" src="${getCatImg(cat.categoryName)}" alt="${cat.categoryName}" onerror="this.style.display='none'">
-      <div class="cat-overlay"></div>
-      <div class="cat-info">
-        <div class="cat-number">${String(n++).padStart(2,'0')}</div>
-        <div class="cat-name">${cat.categoryName}</div>
-        <div class="cat-count-label">${cat.items.length} صنف</div>
-      </div>
-      <i class="fas fa-arrow-left cat-arrow"></i>
-    `;
-    block.onclick = () => displayPage(idx);
-    grid.appendChild(block);
-  });
-
-  pageContent.appendChild(grid);
 }
 
-// ── render category ──
-function renderCategory(cat, fullView = false) {
-  pageContent.innerHTML = '';
-
-  const bar = document.createElement('div');
-  bar.className = 'cat-header-bar';
-  bar.innerHTML = `
-    <div class="ch-title">${cat.categoryName}</div>
-    <div class="ch-count">${cat.items.length} صنف</div>
-  `;
-  pageContent.appendChild(bar);
-
-  const shown = (fullView || cat.items.length <= PREVIEW) ? cat.items : cat.items.slice(0, PREVIEW);
-
-  const table = document.createElement('table');
-  table.className = 'items-table';
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>الصنف</th>
-        <th>الوحدة</th>
-        <th>السعر</th>
-        <th style="text-align:center; width: 120px;">الطلب</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
-
-  const tbody = table.querySelector('tbody');
-  shown.forEach(item => tbody.appendChild(buildRow(item)));
-  pageContent.appendChild(table);
-
-  if (cat.items.length > PREVIEW) {
-    const btn = document.createElement('button');
-    btn.className = 'toggle-more-btn';
-    btn.innerHTML = fullView
-      ? '<i class="fas fa-chevron-up"></i>  عرض أقل'
-      : `<i class="fas fa-chevron-down"></i>  عرض المزيد (${cat.items.length - PREVIEW} إضافي)`;
-    btn.onclick = () => {
-      renderCategory(cat, !fullView);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+// تحديث الكمية مباشرة عند كتابتها يدوياً داخل الحقل الرقمي
+function updateQtyDirectly(name, pricePerKilo, unitWeight, unit, code, value) {
+  const qty = parseFloat(value);
+  
+  if (isNaN(qty) || qty <= 0) {
+    // إزالة الصنف من السلة لو تم مسح الرقم أو كتابة صفر
+    cart = cart.filter(c => c.name !== name);
+  } else {
+    const piecePrice = pricePerKilo * unitWeight;
+    const itemIdx = cart.findIndex(c => c.name === name);
+    
+    const itemData = {
+      name: name,
+      pricePerKilo: pricePerKilo,
+      unitWeight: unitWeight,
+      piecePrice: piecePrice,
+      unit: unit,
+      code: code,
+      qty: qty,
+      itemTotal: qty * piecePrice
     };
-    pageContent.appendChild(btn);
-  }
-}
 
-// ── build table row ──
-function buildRow(item, showBadge = false) {
-  const tr = document.createElement('tr');
-  const cleanName = item.name.replace(/"/g, '&quot;');
-  const cleanUnit = (item.unit || '—').replace(/"/g, '&quot;');
-  const cleanCode = (item.code || '').replace(/"/g, '&quot;');
-  const cleanCat = (item.categoryName || '').replace(/"/g, '&quot;');
-  const itemPrice = parseFloat(item.price) || 0;
-
-  // فحص كمية الصنف في السلة حالياً ليعرضها العداد
-  const currentInCart = cart.find(i => i.name === item.name);
-  const qtyVal = currentInCart ? currentInCart.qty : 0;
-
-  tr.innerHTML = `
-    <td>
-      ${showBadge ? `<div class="search-badge">${item.categoryName}</div>` : ''}
-      <div class="td-name">${item.name}</div>
-      ${item.pkg ? `<div class="td-pkg">${item.pkg}</div>` : ''}
-    </td>
-    <td class="td-unit">${item.unit||'—'}</td>
-    <td class="td-price">${item.price||'—'} <span>ج.م</span></td>
-    <td style="text-align:center;">
-      <div class="qty-controls-row">
-        <button class="qty-row-btn" onclick="changeQtyInline('${cleanName}', ${itemPrice}, '${cleanUnit}', '${cleanCode}', '${cleanCat}', -1)"><i class="fas fa-minus"></i></button>
-        <span class="qty-row-val" id="qty-field-${btoa(encodeURIComponent(item.name)).replace(/=/g, '')}">${qtyVal}</span>
-        <button class="qty-row-btn" onclick="changeQtyInline('${cleanName}', ${itemPrice}, '${cleanUnit}', '${cleanCode}', '${cleanCat}', 1)"><i class="fas fa-plus"></i></button>
-      </div>
-    </td>
-  `;
-
-  return tr;
-}
-
-// التحكم بالكميات من داخل جدول العرض مباشرة
-function changeQtyInline(name, price, unit, code, cat, direction) {
-  let item = cart.find(i => i.name === name);
-  if (item) {
-    item.qty += direction;
-    if (item.qty <= 0) {
-      cart = cart.filter(i => i.name !== name);
+    if (itemIdx > -1) {
+      cart[itemIdx] = itemData; // تحديث البيانات
+    } else {
+      cart.push(itemData); // إضافة صنف جديد
     }
-  } else if (direction > 0) {
-    cart.push({ name, price, unit, code, categoryName: cat, qty: 1 });
   }
-  
-  updateCartUI();
-  
-  // تحديث الرقم في الحقل الحالي المعروض بالصفحة فوراً
-  const fieldId = "qty-field-" + btoa(encodeURIComponent(name)).replace(/=/g, '');
-  const field = document.getElementById(fieldId);
-  const updatedItem = cart.find(i => i.name === name);
-  if (field) {
-    field.innerText = updatedItem ? updatedItem.qty : 0;
-  }
+  updateCartTotals();
 }
 
-// فتح / إغلاق سلة المشتريات الجانبية
+function updateCartTotals() {
+  const badge = document.getElementById('cartCountBadge');
+  badge.innerText = cart.length;
+}
+
 function toggleCartDrawer() {
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('cartDrawerOverlay');
@@ -1147,286 +415,99 @@ function toggleCartDrawer() {
   } else {
     drawer.style.transform = 'translateX(0%)';
     overlay.style.display = 'block';
-    renderCartDrawerItems();
+    renderCartItems();
   }
 }
 
-// تحديث الواجهة العامة للسلة (العداد العائم)
-function updateCartUI() {
-  const badge = document.getElementById('cartCountBadge');
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  badge.innerText = totalQty;
-}
-
-// عرض محتويات وعناصر السلة داخل النافذة الجانبية
-function renderCartDrawerItems() {
-  const listContainer = document.getElementById('cartItemsList');
-  const totalValueContainer = document.getElementById('cartTotalValue');
-  listContainer.innerHTML = '';
+// عرض الفاتورة التفصيلية داخل السلة قبل التصدير
+function renderCartItems() {
+  const list = document.getElementById('cartItemsList');
+  const totalContainer = document.getElementById('cartTotalValue');
+  list.innerHTML = '';
   
-  let totalSum = 0;
+  let grandTotal = 0;
   
-  if (cart.length === 0) {
-    listContainer.innerHTML = '<div style="text-align:center; padding: 40px 0; color: var(--muted);"><i class="fas fa-shopping-basket" style="font-size:24px; margin-bottom:8px; display:block;"></i>السلة فارغة حالياً</div>';
-    totalValueContainer.innerText = '0';
+  if(cart.length === 0) {
+    list.innerHTML = '<p style="text-align:center; padding:30px; color:var(--muted);">السلة فارغة، اكتب الكميات المطلوبة بجانب الأصناف.</p>';
+    totalContainer.innerText = '0';
     return;
   }
-  
+
   cart.forEach(item => {
-    const subTotal = item.price * item.qty;
-    totalSum += subTotal;
-    
+    grandTotal += item.itemTotal;
     const div = document.createElement('div');
     div.className = 'cart-drawer-item';
     div.innerHTML = `
-      <div class="cart-drawer-item-info">
-        <h4>${item.name}</h4>
-        <p>${item.price} ج.م × ${item.qty} ${item.unit}</p>
+      <div class="cart-item-top">
+        <span>${item.name}</span>
+        <span>${item.itemTotal.toFixed(2)} ج.م</span>
       </div>
-      <div class="qty-controls-row">
-        <button class="qty-row-btn" onclick="changeQtyInDrawer('${item.name.replace(/"/g, '&quot;')}', -1)"><i class="fas fa-minus"></i></button>
-        <span class="qty-row-val">${item.qty}</span>
-        <button class="qty-row-btn" onclick="changeQtyInDrawer('${item.name.replace(/"/g, '&quot;')}', 1)"><i class="fas fa-plus"></i></button>
+      <div class="cart-item-details">
+        <span>سعر الكيلو: ${item.pricePerKilo} ج.م | وزن الوحدة: ${item.unitWeight} كجم</span>
+        <span>سعر القطعة: ${item.piecePrice.toFixed(2)} ج.م × الكمية: <strong>${item.qty}</strong></span>
       </div>
     `;
-    listContainer.appendChild(div);
+    list.appendChild(div);
   });
   
-  totalValueContainer.innerText = totalSum;
+  totalContainer.innerText = grandTotal.toFixed(2);
 }
 
-function changeQtyInDrawer(name, direction) {
-  let item = cart.find(i => i.name === name);
-  if (item) {
-    item.qty += direction;
-    if (item.qty <= 0) {
-      cart = cart.filter(i => i.name !== name);
-    }
-  }
-  updateCartUI();
-  renderCartDrawerItems();
-  
-  // لضمان تزامن العدادات بالجدول الأساسي عند تغييرها من السلة الجانبية
-  const fieldId = "qty-field-" + btoa(encodeURIComponent(name)).replace(/=/g, '');
-  const field = document.getElementById(fieldId);
-  if (field) {
-    const updatedItem = cart.find(i => i.name === name);
-    field.innerText = updatedItem ? updatedItem.qty : 0;
-  }
-}
+// تصدير الفاتورة بالكامل لملف جوجل شيت
+function submitFinalOrderToSheet() {
+  const clientName = document.getElementById('custName').value.trim();
+  if(cart.length === 0) { alert('السلة فارغة تماماً!'); return; }
+  if(!clientName) { alert('برجاء كتابة اسم العميل أولاً لحفظ الفاتورة باسمه!'); return; }
 
-// ── إرسال الطلب النهائي (واتساب + ترحيل للـ Google Sheet) ──
-function submitFinalOrder() {
-  if (cart.length === 0) {
-    alert('السلة فارغة! قم بإضافة بعض أصناف الحلوى أولاً.');
-    return;
-  }
-  
-  const customerName = document.getElementById('custName').value.trim();
-  const whatsappTarget = document.getElementById('branchSelect').value;
-  
-  if (!customerName) {
-    alert('من فضلك أدخل اسمك الكريم أولاً لتأكيد الطلب.');
-    return;
-  }
-  
-  // 1. ترحيل وتصدير البيانات فوراً لجوجل شيت في الخلفية دون تعطيل واجهة المستخدم
-  sendDataToGoogleScript(customerName);
-  
-  // 2. إعداد الرسالة الجمالية المنسقة للواتساب
-  let msg = `*طلب جديد من منيو جني جولد* ✨\n\n`;
-  msg += `*اسم العميل:* ${customerName}\n`;
-  msg += `*تفاصيل الطلب:*\n`;
-  msg += `--------------------------------\n`;
-  
-  let totalSum = 0;
-  cart.forEach((item, index) => {
-    const sub = item.price * item.qty;
-    totalSum += sub;
-    msg += `${index + 1}. *${item.name}*\n   الكمية: ${item.qty} ${item.unit} | السعر: ${sub} ج.م ${item.code ? `[كود: ${item.code}]` : ''}\n`;
-  });
-  
-  msg += `--------------------------------\n`;
-  msg += `*الإجمالي الكلي للطلب:* ${totalSum} ج.م 💰\n\n`;
-  msg += `تم الطلب عبر المنيو الإلكتروني الخاص بـ Jana Gold.`;
-  
-  const encodedMsg = encodeURIComponent(msg);
-  const whatsappUrl = `https://wa.me/${whatsappTarget}?text=${encodedMsg}`;
-  
-  // فتح الواتساب وإرسال النص، ثم تصفير السلة وإغلاق النافذة
-  window.open(whatsappUrl, '_blank');
-  
-  cart = [];
-  document.getElementById('custName').value = '';
-  updateCartUI();
-  toggleCartDrawer();
-  
-  // تصفير كل العدادات المرئية في الجداول
-  document.querySelectorAll('.qty-row-val').forEach(el => el.innerText = '0');
-  showToast('تم تأكيد طلبك بنجاح وعرضه بالواتساب ✓');
-}
+  const grandTotal = cart.reduce((sum, i) => sum + i.itemTotal, 0);
 
-// إرسال البيانات بشكل مخفي لـ Google Apps Script
-function sendDataToGoogleScript(customerName) {
-  if (GOOGLE_APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
-    console.log('يرجى تهيئة رابط الـ Apps Script لتفعيل التصدير المباشر للجوجل شيت.');
-    return;
-  }
-  
+  // إعداد مصفوفة البيانات المنظمة بدقة متناهية للإرسال
   const payload = {
-    customerName: customerName,
-    items: cart,
-    timestamp: new Date().toLocaleString('ar-EG')
+    customerName: clientName,
+    invoiceTotal: grandTotal.toFixed(2),
+    timestamp: new Date().toLocaleString('ar-EG'),
+    items: cart.map(i => ({
+      name: i.name,
+      unit: i.unit,
+      pricePerKilo: i.pricePerKilo,
+      unitWeight: i.unitWeight,
+      piecePrice: i.piecePrice.toFixed(2),
+      quantity: i.qty,
+      itemTotal: i.itemTotal.toFixed(2)
+    }))
   };
-  
+
+  if (GOOGLE_APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+    alert('رائع! النظام جاهز، يرجى ربط الكود برابط الـ Google Apps Script الفعلي لإتمام الحفظ السحابي بالشيت.');
+    console.log('Payload Data:', payload);
+    return;
+  }
+
+  // إرسال البيانات فوراً لـ Google Sheet
   fetch(GOOGLE_APPS_SCRIPT_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  .then(() => console.log('تم ترحيل وتصدير البيانات لجوجل شيت بنجاح.'))
-  .catch(err => console.error('خطأ أثناء الإرسال لجوجل شيت:', err));
-}
-
-// ── display page ──
-function displayPage(idx) {
-  if (idx < 0 || idx >= allCats.length) return;
-  currentIdx = idx;
-
-  // scroll to top of page on navigation
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  if (allCats[idx].isIndex) renderIndex();
-  else renderCategory(allCats[idx]);
-
-  updateNav();
-  updateTabs();
-}
-
-function updateNav() {
-  const total = allCats.length;
-  prevBtn.disabled = currentIdx === 0;
-  nextBtn.disabled = currentIdx === total - 1;
-  progressFill.style.width = total <= 1 ? '0%' : (currentIdx / (total - 1)) * 100 + '%';
-
-  if (currentIdx === 0) {
-    pageInfoEl.textContent = 'الرئيسية';
-    indexBtn.style.display = 'none';
-  } else {
-    pageInfoEl.textContent = `${currentIdx} / ${total - 1}`;
-    indexBtn.style.display = 'inline-block';
-  }
-}
-
-function updateTabs() {
-  navStrip.querySelectorAll('.nav-tab').forEach(btn => {
-    btn.classList.toggle('active', parseInt(btn.dataset.idx) === currentIdx);
+  .then(() => {
+    showToast('✓ تم تصدير الفاتورة وحفظها في ملف الجوجل شيت بنجاح!');
+    cart = [];
+    document.getElementById('custName').value = '';
+    updateCartTotals();
+    toggleCartDrawer();
+    displayPage(currentIdx); // إعادة تحديث الواجهة وتصفير الحقول
+  })
+  .catch(err => {
+    console.error(err);
+    alert('حدث خطأ أثناء التصدير لجوجل شيت، يرجى التحقق من الرابط والاتصال.');
   });
 }
 
-// ── nav buttons ──
-prevBtn.onclick  = () => displayPage(currentIdx - 1);
-nextBtn.onclick  = () => displayPage(currentIdx + 1);
-indexBtn.onclick = () => displayPage(0);
-
-function mkEyebrow(label) {
-  const d = document.createElement('div');
-  d.className = 'section-eyebrow';
-  d.innerHTML = `<div class="eyebrow-line"></div><div class="eyebrow-text">${label}</div><div class="eyebrow-line"></div>`;
-  return d;
-}
-
-// ── search ──
-searchInput.addEventListener('input', () => {
-  const term = searchInput.value.trim();
-  clearSearch.style.display = term ? 'block' : 'none';
-  if (!term) { autoBox.style.display = 'none'; displayPage(currentIdx); return; }
-
-  const clean = cleanText(term);
-  const results = [];
-
-  allData.forEach(row => {
-    const nameK = fk(row,'الصنف');
-    const catK  = fk(row,'التصنيف');
-    const nameT = nameK ? row[nameK] : '';
-    const catT  = catK  ? row[catK]  : '';
-    if (cleanText(nameT).includes(clean) || cleanText(catT).includes(clean)) {
-      results.push({
-        name: (nameT||'').trim(),
-        price: (row[fk(row,'السعر')]||'').trim(),
-        unit:  (row[fk(row,'الوحدة')]||'').trim(),
-        pkg:   (row[fk(row,'العبوة')]||'').trim(),
-        code:  (row[fk(row,'كود الصنف')] || row[fk(row,'الكود')] || '').trim(),
-        categoryName: (catT||'').trim()
-      });
-    }
-  });
-
-  showAutoComplete(results.slice(0,5));
-  showSearchResults(results, term);
-});
-
-function showAutoComplete(items) {
-  if (!items.length) { autoBox.style.display = 'none'; return; }
-  autoBox.innerHTML = '';
-  items.forEach(it => {
-    const d = document.createElement('div');
-    d.className = 'auto-item';
-    d.innerHTML = `<span>${it.name}</span><span class="auto-cat">${it.categoryName}</span>`;
-    d.onclick = () => {
-      searchInput.value = it.name;
-      autoBox.style.display = 'none';
-      showSearchResults([it], it.name);
-    };
-    autoBox.appendChild(d);
-  });
-  autoBox.style.display = 'block';
-}
-
-function showSearchResults(results, term) {
-  pageContent.innerHTML = '';
-  if (!results.length) {
-    pageContent.innerHTML = `<div class="no-results"><i class="fas fa-search-minus"></i><p>لا نتائج لـ "<strong>${term}</strong>"</p></div>`;
-    return;
-  }
-
-  const bar = document.createElement('div');
-  bar.className = 'cat-header-bar';
-  bar.innerHTML = `<div class="ch-title">نتائج البحث</div><div class="ch-count">${results.length} نتيجة</div>`;
-  pageContent.appendChild(bar);
-
-  const table = document.createElement('table');
-  table.className = 'items-table';
-  table.innerHTML = `<thead><tr><th>الصنف</th><th>الوحدة</th><th>السعر</th><th style="text-align:center; width:120px;">الطلب</th></tr></thead><tbody></tbody>`;
-  const tbody = table.querySelector('tbody');
-  results.forEach(it => tbody.appendChild(buildRow(it, true)));
-  pageContent.appendChild(table);
-}
-
-clearSearch.onclick = () => {
-  searchInput.value = '';
-  clearSearch.style.display = 'none';
-  autoBox.style.display = 'none';
-  displayPage(currentIdx);
-};
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.search-inner')) autoBox.style.display = 'none';
-});
-
-// ── load CSV ──
+// التحميل الأولي عبر PapaParse
 Papa.parse(SHEET_URL, {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete(res) {
-    allData = res.data;
-    processData(allData);
-  },
-  error() {
-    pageContent.innerHTML = '<div style="padding:60px;text-align:center;color:#c0392b"><i class="fas fa-exclamation-triangle"></i><p style="margin-top:10px">خطأ في الاتصال بقاعدة البيانات</p></div>';
-  }
+  download: true, header: true, skipEmptyLines: true,
+  complete(res) { processData(res.data); }
 });
 </script>
 </body>
