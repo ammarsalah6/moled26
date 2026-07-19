@@ -1,152 +1,1568 @@
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.Sheets.v4;
-using Google.Apis.Sheets.v4.Data;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jana Gold — قائمة الأسعار 1448 هـ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+  :root {
+    --ink:       #1A1208;
+    --ink-mid:   #2C2416;
+    --gold:      #8B6914;
+    --gold-lt:   #C9B87A;
+    --gold-bg:   #F2EBD9;
+    --cream:     #FAF7F2;
+    --rule:      #E0D5C0;
+    --muted:     #8B7040;
+    --white:     #FFFFFF;
+    --dark-bg:   #1A1208;
+    --dark-text: #FAF7F2;
+  }
 
-// 1. إعدادات جوجل شيت والواتساب (استبدل القيم بالبيانات الخاصة بك)
-const string SpreadsheetId = "1-6QphGlFXSnfnQMTPYrBxQf_-ZfHXXlKi43GxUf17lw"; // معرف الشيت الخاص بك
-const string WhatsAppToken = "YOUR_WHATSAPP_BEARER_TOKEN";
-const string PhoneId = "YOUR_PHONE_NUMBER_ID";
+  html {
+    scroll-behavior: smooth;
+  }
 
-// 2. دالة إرسال قائمة الكميات بالوحدة إلى العميل عبر الواتساب
-app.MapPost("/send-menu", async (string phoneNumber, string productName) =>
-{
-    using var client = new HttpClient();
-    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", WhatsAppToken);
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--cream);
+    color: var(--ink-mid);
+    min-height: 100vh;
+    padding-bottom: 80px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 
-    string url = $"https://graph.facebook.com/v17.0/{PhoneId}/messages";
+  /* ── HEADER ── */
+  .jana-header {
+    padding: 2rem 2rem 1.25rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
 
-    // هيكل القائمة التفاعلية ليتفادى العميل الكتابة في الموقع أو الواتساب
-    var payload = new
-    {
-        messaging_product = "whatsapp",
-        recipient_type = "individual",
-        to = phoneNumber,
-        type = "interactive",
-        interactive = new
-        {
-            type = "list",
-            header = new { type = "text", text = $"تحديد كمية {productName}" },
-            body = new { text = "الرجاء اختيار العدد المطلوب بالوحدة:" },
-            footer = new { text = "Jana Gold" },
-            action = new
-            {
-                button = "اختر الكمية",
-                sections = new[]
-                {
-                    new
-                    {
-                        title = "الكمية بالوحدة",
-                        rows = new[]
-                        {
-                            new { id = "qty_1", title = "1", description = "وحدة واحدة" },
-                            new { id = "qty_2", title = "2", description = "وحدتين" },
-                            new { id = "qty_3", title = "3", description = "3 وحدات" },
-                            new { id = "qty_4", title = "4", description = "4 وحدات" },
-                            new { id = "qty_5", title = "5", description = "5 وحدات" }
-                        }
-                    }
-                }
-            }
-        }
-    };
+  .header-text-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
 
-    var json = JsonSerializer.Serialize(payload);
-    var content = new StringContent(json, Encoding.UTF8, "application/json");
-    
-    var response = await client.PostAsync(url, content);
-    return response.IsSuccessStatusCode ? Results.Ok("تم إرسال قائمة الكميات بنجاح.") : Results.BadRequest("فشل إرسال القائمة.");
-});
+  .masthead-issue {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
 
-// 3. الـ Webhook المستمع لواتساب: يستقبل اختيار العميل ويرسله فوراً لجوجل شيت
-app.MapPost("/whatsapp-webhook", async (HttpContext context) =>
-{
-    using var reader = new StreamReader(context.Request.Body);
-    string requestBody = await reader.ReadToEndAsync();
-    
-    using var doc = JsonDocument.Parse(requestBody);
-    var root = doc.RootElement;
+  .masthead-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
 
-    try
-    {
-        // التحقق من أن الرسالة القادمة هي ضغطة زر من القائمة التفاعلية (List Reply)
-        if (root.TryGetProperty("entry", out var entry) && 
-            entry[0].TryGetProperty("changes", out var changes) && 
-            changes[0].TryGetProperty("value", out var value) && 
-            value.TryGetProperty("messages", out var messages))
-        {
-            var message = messages[0];
-            string messageType = message.GetProperty("type").GetString();
+  .masthead-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
 
-            if (messageType == "interactive")
-            {
-                var interactive = message.GetProperty("interactive");
-                if (interactive.GetProperty("type").GetString() == "list_reply")
-                {
-                    string customerPhone = message.GetProperty("from").GetString();
-                    string selectionId = interactive.GetProperty("list_reply").GetProperty("id").GetString();
-                    
-                    // استخراج العدد المختار (مثال: من "qty_3" نأخذ "3")
-                    string quantity = selectionId.Replace("qty_", ""); 
-                    
-                    string productName = "خاتم ذهب عيار 21"; // تفاصيل المنتج المختار
-                    string calculationMethod = "بالوحدة"; // تثبيت طريقة الحساب بالوحدة بناءً على طلبك
+  .tagline-ar {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #5C4A1E;
+    font-style: italic;
+    margin-top: 2px;
+  }
 
-                    // تنفيذ الإرسال التلقائي إلى Google Sheet عبر الـ API الرسمي
-                    await AppendToGoogleSheet(customerPhone, productName, calculationMethod, quantity);
-                }
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"خطأ أثناء المعالجة: {ex.Message}");
-    }
+  .stats-line {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
 
-    return Results.Ok();
-});
+  .logo-box {
+    width: 110px;
+    height: 110px;
+  }
 
-// 4. الدالة المساعدة للربط والكتابة في Google Sheets
-async Task AppendToGoogleSheet(string phone, string product, string method, string qty)
-{
-    // تحميل ملف الصلاحيات JSON الخاص بجوجل كلاود (يجب أن يكون في مجلد المشروع)
-    GoogleCredential credential;
-    using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-    {
-        credential = GoogleCredential.FromStream(stream).CreateScoped(SheetsService.Scope.WithScopes(SheetsService.Scope.Spreadsheets));
-    }
+  .brand-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 
-    var service = new SheetsService(new BaseClientService.Initializer()
-    {
-        HttpClientInitializer = credential,
-        ApplicationName = "JanaGold_WhatsApp_Integration"
-    });
+  /* ── PROGRESS BAR ── */
+  #progress-bar { height: 3px; background: var(--rule); }
+  #progress-fill { height: 100%; background: var(--gold); transition: width .4s ease; width: 0%; }
 
-    // تجهيز السطر المراد إدخاله في الجدول مرتباً بالأعمدة
-    var rowData = new ValueRange
-    {
-        Values = new System.Collections.Generic.List<System.Collections.Generic.IList<object>>
-        {
-            new System.Collections.Generic.List<object> { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), phone, product, method, qty }
-        }
-    };
+  /* ── SEARCH ── */
+  .search-bar {
+    padding: .85rem 2rem;
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-    // إرسال البيانات فوراً لتبدأ من عمود A إلى E تلقائياً في الشيت المفتوح
-    var appendRequest = service.Spreadsheets.Values.Append(rowData, SpreadsheetId, "A:E");
-    appendRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-    await appendRequest.ExecuteAsync();
+  .search-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 500px;
+    border: 1px solid var(--gold-lt);
+    border-radius: 2px;
+    padding: 8px 14px;
+    background: var(--white);
+    position: relative;
+  }
+
+  .search-inner input {
+    border: none;
+    outline: none;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .95rem;
+    background: transparent;
+    color: var(--ink-mid);
+    flex: 1;
+  }
+
+  .search-inner input::placeholder { color: #B0A080; }
+  .si-icon { color: var(--gold); font-size: 14px; }
+
+  #clearSearch {
+    background: none;
+    border: none;
+    color: var(--gold);
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
+    padding: 0;
+  }
+
+  .autocomplete-box {
+    position: absolute;
+    top: 100%;
+    right: 0; left: 0;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-top: none;
+    z-index: 30;
+    display: none;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .auto-item {
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule);
+    font-size: .9rem;
+  }
+
+  .auto-item:hover { background: var(--gold-bg); }
+  .auto-cat { font-size: .72rem; color: var(--gold); background: var(--gold-bg); padding: 2px 7px; }
+
+  /* ── NAV TABS ── */
+  .nav-strip {
+    display: flex;
+    border-bottom: 2px solid var(--ink);
+    padding: 0 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav-strip::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    padding: .6rem 1.1rem;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: color .2s, border-color .2s;
+  }
+
+  .nav-tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+  .nav-tab:hover  { color: var(--ink); }
+
+  /* ── PAGE BODY ── */
+  #page-content {
+    padding: 1.75rem 2rem;
+    min-height: 400px;
+  }
+
+  /* ── LOADING ── */
+  .loading-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 80px 0;
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  .choco-loader { display: flex; gap: 5px; }
+
+  .choco-dot {
+    width: 9px; height: 9px;
+    border-radius: 2px;
+    background: var(--gold);
+    animation: chocoWave 1.2s ease-in-out infinite;
+  }
+
+  .choco-dot:nth-child(2) { animation-delay: .15s; }
+  .choco-dot:nth-child(3) { animation-delay: .3s;  }
+
+  @keyframes chocoWave {
+    0%,80%,100% { transform: translateY(0) scale(1);    opacity: .5; }
+    40%          { transform: translateY(-5px) scale(1.2); opacity: 1; }
+  }
+
+  /* ── EYEBROW ── */
+  .section-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .eyebrow-line { flex: 1; height: 1px; background: var(--rule); }
+
+  .eyebrow-text {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  /* ── INDEX GRID ── */
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--rule);
+    margin-bottom: 0;
+  }
+
+  .cat-block {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    position: relative;
+    transition: transform .3s, box-shadow .3s;
+    overflow: hidden;
+    height: 130px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .cat-block:nth-child(3n) { border-right: none; }
+  .cat-block:nth-last-child(-n+3) { border-bottom: none; }
+
+  .cat-block:hover { transform: scale(1.02); box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 2; }
+  .cat-block:hover .cat-bg-img { transform: scale(1.08); }
+
+  .cat-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+  }
+
+  .cat-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,8,4,0.88) 40%, rgba(10,8,4,0.15) 100%);
+  }
+
+  .cat-info {
+    position: relative;
+    z-index: 2;
+    padding: .85rem 1rem 2rem;
+  }
+
+  .cat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: rgba(201,184,122,0.35);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .cat-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #FAF7F2;
+    margin-bottom: 3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+
+  .cat-count-label { font-size: .68rem; color: var(--gold-lt); letter-spacing: 1px; }
+
+  .cat-arrow {
+    position: absolute;
+    bottom: .75rem;
+    left: .85rem;
+    color: var(--gold-lt);
+    font-size: 13px;
+    z-index: 2;
+  }
+
+  /* ── BEST SELLERS DARK PANEL ── */
+  .best-panel {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    padding: 1.5rem;
+    border: 1px solid #3A3020;
+    margin-bottom: 0;
+  }
+
+  .best-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-lt);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .best-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .best-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #3A3020;
+  }
+
+  .best-item-row:last-child { border-bottom: none; }
+  .best-item-name { font-size: .9rem; color: #E8DFC0; }
+
+  .best-item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-lt);
+  }
+
+  .best-item-price span { font-size: .68rem; font-family: 'Tajawal', sans-serif; }
+
+  .best-pkg {
+    font-size: .7rem;
+    color: #9A8A60;
+    margin-right: 8px;
+  }
+
+  /* ── ITEMS LIST ── */
+  .cat-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    padding-bottom: .75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .cat-header-bar .ch-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .cat-header-bar .ch-count {
+    font-size: .75rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .items-table { width: 100%; border-collapse: collapse; }
+  .items-table thead tr { border-bottom: 1px solid var(--ink); }
+
+  .items-table thead th {
+    font-size: .7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 6px 8px;
+    text-align: right;
+  }
+
+  .items-table thead th:last-child { text-align: left; }
+
+  .items-table tbody tr {
+    border-bottom: 1px solid var(--rule);
+    transition: background .15s;
+  }
+
+  .items-table tbody tr:hover { background: var(--gold-bg); }
+
+  .items-table td { padding: 12px 8px; vertical-align: middle; }
+
+  .td-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
+
+  .td-pkg {
+    font-size: .72rem;
+    color: var(--gold);
+    background: var(--gold-bg);
+    padding: 2px 8px;
+    display: inline-block;
+    margin-top: 3px;
+  }
+
+  .td-unit { font-size: .78rem; color: var(--muted); }
+
+  .td-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .td-price span { font-size: .65rem; font-family: 'Tajawal', sans-serif; color: var(--muted); }
+
+  .td-actions { text-align: left; }
+
+  .act-pill {
+    font-size: 11px;
+    padding: 4px 9px;
+    border: 1px solid var(--gold-lt);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin-right: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all .15s;
+  }
+
+  .act-pill:hover { background: var(--gold); color: var(--white); border-color: var(--gold); }
+
+  .toggle-more-btn {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 10px;
+    border: 1px dashed var(--rule);
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Tajawal', sans-serif;
+    font-size: .85rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background .2s;
+  }
+
+  .toggle-more-btn:hover { background: var(--gold-bg); }
+
+  /* ── SEARCH RESULTS ── */
+  .search-badge {
+    font-size: .7rem;
+    background: var(--gold);
+    color: var(--white);
+    padding: 2px 7px;
+    margin-bottom: 3px;
+    display: inline-block;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .no-results i { font-size: 2rem; margin-bottom: 12px; display: block; color: var(--rule); }
+
+  /* ── PAGINATION ── */
+  .pagination-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 2rem;
+    background: var(--ink);
+    border-top: 1px solid #3A3020;
+  }
+
+  .nav-btn {
+    background: transparent;
+    border: 1px solid var(--gold-lt);
+    color: var(--gold-lt);
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-btn:hover:not(:disabled) { background: var(--gold); color: var(--white); border-color: var(--gold); }
+  .nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+  .nav-center { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  #pageInfo { color: var(--gold-lt); font-size: .8rem; letter-spacing: 2px; }
+
+  #indexBtn {
+    background: transparent;
+    border: none;
+    color: var(--gold-lt);
+    font-size: .75rem;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    letter-spacing: 1px;
+    display: none;
+  }
+
+  #indexBtn:hover { color: var(--white); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--gold-lt);
+    padding: 8px 20px;
+    font-size: .85rem;
+    opacity: 0;
+    transition: opacity .3s;
+    z-index: 999;
+    border: 1px solid var(--gold);
+    letter-spacing: 1px;
+  }
+
+  #toast.show { opacity: 1; }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--ink);
+    border-top: 1px solid #3A3020;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .social-bar a {
+    color: var(--gold-lt);
+    font-size: 1.2rem;
+    transition: color .2s;
+  }
+
+  .social-bar a:hover { color: var(--white); }
+
+  /* ── DARK MODE TOGGLE ── */
+  #darkModeToggle {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 50;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    color: var(--gold);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── DARK MODE ── */
+  body.dark-mode {
+    --ink:      #FAF7F2;
+    --ink-mid:  #E8DFC0;
+    --gold:     #C9B87A;
+    --gold-lt:  #8B6914;
+    --gold-bg:  #2A2010;
+    --cream:    #121008;
+    --rule:     #3A3020;
+    --muted:    #9A8A60;
+    --white:    #1E180A;
+    --dark-bg:  #0A0804;
+    --dark-text:#FAF7F2;
+  }
+
+  /* ── QTY STEPPER (كمية بالعبوة) ── */
+  .qty-stepper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+  }
+  .qty-btn {
+    width: 26px; height: 26px;
+    border: 1px solid var(--gold-lt);
+    background: var(--white);
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    line-height: 1;
+    user-select: none;
+    transition: all .15s;
+  }
+  .qty-btn:hover { background: var(--gold); color: var(--white); }
+  .qty-btn:active { transform: scale(.9); }
+  .qty-val {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--ink);
+  }
+  .td-qty { text-align: center; }
+  tr.in-cart { background: var(--gold-bg); }
+
+  /* ── CART FLOATING BUTTON ── */
+  #cartFab {
+    position: fixed;
+    bottom: 66px;
+    left: 16px;
+    z-index: 110;
+    background: var(--gold);
+    color: var(--white);
+    border: none;
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  #cartFab .cart-badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    background: var(--ink);
+    color: var(--gold-lt);
+    font-size: .68rem;
+    min-width: 19px; height: 19px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 1px solid var(--gold-lt);
+  }
+
+  /* ── CART MODAL ── */
+  #cartOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,8,4,0.6);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  #cartModal {
+    background: var(--cream);
+    width: 100%;
+    max-width: 560px;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 14px 14px 0 0;
+    padding: 1.25rem 1.25rem 1.5rem;
+    animation: slideUp .25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(30px); opacity:0;} to {transform: translateY(0); opacity:1;} }
+  .cart-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: .75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .cart-modal-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+  #closeCart {
+    background: none; border: none; font-size: 1.3rem; color: var(--muted); cursor: pointer;
+  }
+  .cart-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cart-line-info { flex: 1; }
+  .cart-line-name { font-weight: 500; color: var(--ink); font-size: .92rem; }
+  .cart-line-pkg { font-size: .72rem; color: var(--gold); margin-top: 2px; }
+  .cart-line-total { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--gold); min-width: 78px; text-align: left; }
+  .cart-line-remove { background: none; border: none; color: #a33; cursor: pointer; font-size: .95rem; }
+  .cart-empty { text-align: center; padding: 40px 10px; color: var(--muted); }
+  .cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 0;
+    margin-top: 8px;
+    border-top: 2px solid var(--ink);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .cart-total-row span:last-child { color: var(--gold); font-family: 'Playfair Display', serif; }
+
+  .customer-form { margin-top: 1rem; display: flex; flex-direction: column; gap: 8px; }
+  .customer-form input {
+    border: 1px solid var(--rule);
+    padding: 9px 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .9rem;
+    background: var(--white);
+    color: var(--ink-mid);
+    border-radius: 3px;
+    width: 100%;
+  }
+  .customer-form input:focus { outline: none; border-color: var(--gold); }
+
+  .cart-actions { display: flex; gap: 10px; margin-top: 1.25rem; }
+  .cart-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .cart-btn-pdf { background: var(--gold); color: var(--white); }
+  .cart-btn-pdf:hover { background: #6E5310; }
+  .cart-btn-clear { background: transparent; border: 1px solid var(--muted); color: var(--muted); }
+  .cart-btn-clear:hover { background: #eee; }
+  .cart-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ── INVOICE (مخفي، يُستخدم لتوليد الـ PDF فقط) ── */
+  #invoiceTemplate {
+    position: fixed;
+    top: -99999px;
+    left: -99999px;
+    width: 780px;
+    background: #ffffff;
+    color: #1A1208;
+    font-family: 'Tajawal', sans-serif;
+    padding: 40px;
+    direction: rtl;
+  }
+  #invoiceTemplate .inv-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 3px solid #8B6914; padding-bottom: 16px; margin-bottom: 20px;
+  }
+  #invoiceTemplate .inv-brand { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1A1208; }
+  #invoiceTemplate .inv-brand em { color: #8B6914; font-style: italic; }
+  #invoiceTemplate .inv-meta { text-align: left; font-size: .85rem; color: #555; line-height: 1.7; }
+  #invoiceTemplate .inv-customer { margin-bottom: 18px; font-size: .9rem; color: #333; }
+  #invoiceTemplate .inv-customer strong { color: #1A1208; }
+  #invoiceTemplate table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+  #invoiceTemplate th {
+    background: #1A1208; color: #F2EBD9; padding: 10px 8px; font-size: .82rem; text-align: right;
+  }
+  #invoiceTemplate th:last-child, #invoiceTemplate td:last-child { text-align: left; }
+  #invoiceTemplate td { padding: 9px 8px; border-bottom: 1px solid #e0d5c0; font-size: .87rem; }
+  #invoiceTemplate .inv-total-row td { border-bottom: none; font-weight: 700; font-size: 1.05rem; border-top: 2px solid #1A1208; }
+  #invoiceTemplate .inv-footer { margin-top: 24px; font-size: .78rem; color: #8B7040; text-align: center; border-top: 1px solid #e0d5c0; padding-top: 12px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .jana-header { padding: 1.5rem 1rem; gap: 1rem; }
+    .masthead-title { font-size: 2.2rem; }
+    .logo-box { width: 170px; height: 90px; padding: 1px; }
+    .tagline-ar { font-size: 0.95rem; }
+    .stats-line { font-size: 11px; }
+    .editorial-grid { grid-template-columns: 1fr 1fr; }
+    #page-content { padding: 1rem; }
+    .items-table td { padding: 9px 5px; }
+    .act-pill { display: none; }
+    .td-actions .act-pill:first-child { display: inline-block; }
+    .pagination-nav { padding: 10px 1rem; }
+    .qty-btn { width: 24px; height: 24px; font-size: 13px; }
+    #cartFab { bottom: 66px; left: 12px; width: 50px; height: 50px; }
+  }
+</style>
+</head>
+<body>
+
+<button id="darkModeToggle" title="الوضع الليلي">🌙</button>
+<div id="toast"></div>
+
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<header class="jana-header">
+  <div class="header-text-stack">
+    <div class="masthead-issue">2026 م / 1448 هـ </div>
+    <div class="masthead-title">Jana <em>Gold</em></div>
+    <div class="tagline-ar">حلاوة حلاوتنا</div>
+    <div class="stats-line" id="statsLine">جاري التحميل...</div>
+  </div>
+
+  <div class="logo-box">
+    <img src="logo.png" alt="Jana Gold Logo" class="brand-logo" onerror="this.parentNode.style.display='none'">
+  </div>
+</header>
+
+<div class="search-bar">
+  <div class="search-inner">
+    <i class="fas fa-search si-icon"></i>
+    <input type="text" id="searchInput" placeholder="نفسك في إيه؟ ابحث هنا..." autocomplete="off">
+    <button id="clearSearch"><i class="fas fa-times"></i></button>
+    <div class="autocomplete-box" id="autocompleteBox"></div>
+  </div>
+</div>
+
+<nav class="nav-strip" id="navStrip" aria-label="أقسام المنيو">
+  <button class="nav-tab active" data-idx="0">الكل</button>
+</nav>
+
+<div id="page-content">
+  <div class="loading-wrap">
+    <span>جاري تحضير الحلوى</span>
+    <div class="choco-loader">
+      <div class="choco-dot"></div>
+      <div class="choco-dot"></div>
+      <div class="choco-dot"></div>
+    </div>
+  </div>
+</div>
+
+<div class="pagination-nav">
+  <button id="prevBtn" class="nav-btn" disabled><i class="fas fa-chevron-right"></i> السابق</button>
+  <div class="nav-center">
+    <div id="pageInfo"></div>
+    <button id="indexBtn">↩ الفهرس</button>
+  </div>
+  <button id="nextBtn" class="nav-btn" disabled>التالي <i class="fas fa-chevron-left"></i></button>
+</div>
+
+<div class="social-bar">
+  <a href="https://www.facebook.com/share/16RQhUBg3B/" title="فيسبوك" target="_blank"><i class="fab fa-facebook-f"></i></a>
+  <a href="https://wa.me/+201227201188" title="واتساب" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  <a href="https://www.instagram.com/nazee_al_attar?igsh=djc4MmhrNm1pdjhh" title="إنستجرام" target="_blank"><i class="fab fa-instagram"></i></a>
+  <a href="https://t.me/+TDjFEhC9WXcxZjNk" title="تليجرام" target="_blank"><i class="fab fa-telegram"></i></a>
+  <a href="tel:+201227201188" title="اتصل بنا"><i class="fas fa-phone-alt"></i></a>
+</div>
+
+<!-- زرار السلة العائم -->
+<button id="cartFab" title="السلة">
+  <i class="fas fa-shopping-bag"></i>
+  <span class="cart-badge" id="cartBadge">0</span>
+</button>
+
+<!-- نافذة السلة / الطلب -->
+<div id="cartOverlay">
+  <div id="cartModal">
+    <div class="cart-modal-header">
+      <h3>سلة الطلب</h3>
+      <button id="closeCart"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="cartLines"></div>
+    <div class="cart-total-row" id="cartTotalRow" style="display:none;">
+      <span>الإجمالي</span>
+      <span id="cartTotalVal">0 ج.م</span>
+    </div>
+    <div class="customer-form" id="customerForm" style="display:none;">
+      <input type="text" id="custName" placeholder="اسم العميل (اختياري)">
+      <input type="text" id="custPhone" placeholder="رقم الهاتف (اختياري)">
+    </div>
+    <div class="cart-actions" id="cartActionsRow" style="display:none;">
+      <button class="cart-btn cart-btn-pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> تصدير الفاتورة PDF</button>
+      <button class="cart-btn cart-btn-clear" id="clearCartBtn"><i class="fas fa-trash"></i> مسح الكل</button>
+    </div>
+  </div>
+</div>
+
+<!-- قالب الفاتورة المخفي (يُستخدم فقط عند التصدير) -->
+<div id="invoiceTemplate">
+  <div class="inv-header">
+    <div class="inv-brand">Jana <em>Gold</em></div>
+    <div class="inv-meta">
+      <div id="invDate"></div>
+      <div id="invNumber"></div>
+    </div>
+  </div>
+  <div class="inv-customer" id="invCustomer"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>الصنف</th>
+        <th>العبوة</th>
+        <th>الكمية</th>
+        <th>سعر العبوة</th>
+        <th>الإجمالي</th>
+      </tr>
+    </thead>
+    <tbody id="invBody"></tbody>
+    <tfoot>
+      <tr class="inv-total-row">
+        <td colspan="4">الإجمالي الكلي</td>
+        <td id="invGrandTotal">0 ج.م</td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="inv-footer">Jana Gold — حلاوة حلاوتنا · شكراً لتعاملكم معنا</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════
+//  CONFIG — غيّر رابط الشيت هنا فقط
+// ══════════════════════════════════════════
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRGoyAsNR0JPLb2TQNSDI55YiWFCV0b5bRAmUTsWJxLvjCL_wA-NuoK2_OCCPggtjQ7eI_1JsXxvxlX/pub?output=csv';
+
+const PREVIEW = 8;
+
+// ── refs ──
+const pageContent = document.getElementById('page-content');
+const searchInput  = document.getElementById('searchInput');
+const clearSearch  = document.getElementById('clearSearch');
+const autoBox      = document.getElementById('autocompleteBox');
+const prevBtn      = document.getElementById('prevBtn');
+const nextBtn      = document.getElementById('nextBtn');
+const indexBtn     = document.getElementById('indexBtn');
+const pageInfoEl   = document.getElementById('pageInfo');
+const progressFill = document.getElementById('progress-fill');
+const toastEl      = document.getElementById('toast');
+const navStrip     = document.getElementById('navStrip');
+const statsLine    = document.getElementById('statsLine');
+const darkBtn      = document.getElementById('darkModeToggle');
+
+let allData      = [];
+let allCats      = [];
+let currentIdx   = 0;
+
+// ── dark mode ──
+darkBtn.onclick = () => {
+  document.body.classList.toggle('dark-mode');
+  darkBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+};
+
+// ── helpers ──
+function fk(item, label) {
+  for (const k in item) if (k && k.trim() === label) return k;
+  return null;
 }
 
-app.Run();
+function cleanText(s) {
+  return (s||'').toLowerCase()
+    .replace(/[أإآا]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').trim();
+}
+
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(() => toastEl.classList.remove('show'), 2000);
+}
+
+// ── category images ──
+const catImages = {
+  'علف':    'alaf.jpeg',
+  'مدور':   'mdawar.jpeg',
+  'ملبن':   'malban.jpeg',
+  'قشطة':   'qeshta.jpeg',
+  'بولا':   'baula.jpeg',
+  'مربي':   'mraba.jpeg',
+  'فوااخر': 'fwagher.jpeg',
+  'معبأ':   'moaba.jpeg',
+  'نوجا':   'noga.jpeg',
+  'شكلمة':  'shklama.jpg',
+  'default': 'logo.png'
+};
+
+function getCatImg(name) {
+  for (const [k, v] of Object.entries(catImages)) {
+    if (name.includes(k)) return v;
+  }
+  return catImages['default'];
+}
+
+// ── process CSV ──
+function processData(data) {
+  const map = {};
+  const best = [];
+  let total = 0;
+
+  data.forEach(row => {
+    const cat   = (row[fk(row,'التصنيف')]||'').trim();
+    const name  = (row[fk(row,'الصنف')]||'').trim();
+    const price = (row[fk(row,'السعر')]||'').trim();
+    const unit  = (row[fk(row,'الوحدة')]||'').trim();
+    const pkg   = (row[fk(row,'العبوة')]||'').trim();
+    const isBest= (row[fk(row,'الأكثر مبيعاً')]||'').trim().toLowerCase();
+
+    if (!cat || !name) return;
+    total++;
+    const obj = { name, price, unit, pkg, categoryName: cat };
+    if (!map[cat]) map[cat] = [];
+    map[cat].push(obj);
+    if (['نعم','true','موافق'].includes(isBest)) best.push(obj);
+  });
+
+  statsLine.textContent = `${total} صنف · ${Object.keys(map).length} قسم`;
+
+  const cats = Object.keys(map).filter(k => map[k].length).map(k => ({ categoryName: k, items: map[k] }));
+
+  allCats = [{ categoryName: 'فهرس المنتجات', isIndex: true, items: [] }];
+  if (best.length) allCats.push({ categoryName: '⭐ الأكثر مبيعاً', items: best, isBest: true });
+  allCats.push(...cats);
+
+  buildNavTabs();
+  displayPage(0);
+}
+
+// ── build nav tabs ──
+function buildNavTabs() {
+  navStrip.innerHTML = '';
+  allCats.forEach((cat, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = cat.isIndex ? 'الكل' : cat.categoryName;
+    btn.dataset.idx = i;
+    btn.onclick = () => displayPage(i);
+    navStrip.appendChild(btn);
+  });
+}
+
+// ── render index ──
+function renderIndex() {
+  pageContent.innerHTML = '';
+
+  const eyebrow = mkEyebrow('فهرس الأقسام');
+  pageContent.appendChild(eyebrow);
+
+  const best = allCats.find(c => c.isBest);
+  if (best) {
+    const panel = document.createElement('div');
+    panel.className = 'best-panel';
+    panel.innerHTML = `
+      <div class="best-label">⭐ الأكثر مبيعاً</div>
+      <div class="best-title">أبرز الأصناف هذا الموسم</div>
+      ${best.items.slice(0,5).map(it => `
+        <div class="best-item-row">
+          <span class="best-item-name">
+            ${it.pkg ? `<span class="best-pkg">[${it.pkg}]</span>` : ''}
+            ${it.name}
+          </span>
+          <span class="best-item-price">${it.price||'—'} <span>ج.م</span></span>
+        </div>
+      `).join('')}
+    `;
+    panel.style.cursor = 'pointer';
+    panel.onclick = () => displayPage(allCats.indexOf(best));
+    pageContent.appendChild(panel);
+  }
+
+  const eyebrow2 = mkEyebrow('الأقسام الرئيسية');
+  eyebrow2.style.marginTop = '1.5rem';
+  pageContent.appendChild(eyebrow2);
+
+  const grid = document.createElement('div');
+  grid.className = 'editorial-grid';
+
+  let n = 1;
+  allCats.forEach((cat, idx) => {
+    if (cat.isIndex || cat.isBest) return;
+    const block = document.createElement('div');
+    block.className = 'cat-block';
+    block.innerHTML = `
+      <img class="cat-bg-img" src="${getCatImg(cat.categoryName)}" alt="${cat.categoryName}" onerror="this.style.display='none'">
+      <div class="cat-overlay"></div>
+      <div class="cat-info">
+        <div class="cat-number">${String(n++).padStart(2,'0')}</div>
+        <div class="cat-name">${cat.categoryName}</div>
+        <div class="cat-count-label">${cat.items.length} صنف</div>
+      </div>
+      <i class="fas fa-arrow-left cat-arrow"></i>
+    `;
+    block.onclick = () => displayPage(idx);
+    grid.appendChild(block);
+  });
+
+  pageContent.appendChild(grid);
+}
+
+// ── render category ──
+function renderCategory(cat, fullView = false) {
+  pageContent.innerHTML = '';
+
+  const bar = document.createElement('div');
+  bar.className = 'cat-header-bar';
+  bar.innerHTML = `
+    <div class="ch-title">${cat.categoryName}</div>
+    <div class="ch-count">${cat.items.length} صنف</div>
+  `;
+  pageContent.appendChild(bar);
+
+  const shown = (fullView || cat.items.length <= PREVIEW) ? cat.items : cat.items.slice(0, PREVIEW);
+
+  const table = document.createElement('table');
+  table.className = 'items-table';
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>الصنف</th>
+        <th>الوحدة</th>
+        <th>السعر</th>
+        <th>الكمية</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector('tbody');
+  shown.forEach(item => tbody.appendChild(buildRow(item)));
+  pageContent.appendChild(table);
+
+  if (cat.items.length > PREVIEW) {
+    const btn = document.createElement('button');
+    btn.className = 'toggle-more-btn';
+    btn.innerHTML = fullView
+      ? '<i class="fas fa-chevron-up"></i>  عرض أقل'
+      : `<i class="fas fa-chevron-down"></i>  عرض المزيد (${cat.items.length - PREVIEW} إضافي)`;
+    btn.onclick = () => {
+      renderCategory(cat, !fullView);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    pageContent.appendChild(btn);
+  }
+}
+
+// ── build table row ──
+function buildRow(item, showBadge = false) {
+  const tr = document.createElement('tr');
+  const key = itemKey(item);
+  const shareText = `*${item.name}*\nالسعر: ${item.price||'—'} ج.م${item.pkg ? '\nالعبوة: ' + item.pkg : ''}\n📍 Jana Gold`;
+  const qty = getQty(item);
+
+  tr.innerHTML = `
+    <td>
+      ${showBadge ? `<div class="search-badge">${item.categoryName}</div>` : ''}
+      <div class="td-name">${item.name}</div>
+      ${item.pkg ? `<div class="td-pkg">العبوة: ${item.pkg}</div>` : ''}
+    </td>
+    <td class="td-unit">${item.unit||'—'}</td>
+    <td class="td-price">${item.price||'—'} <span>ج.م</span></td>
+    <td class="td-qty">
+      <div class="qty-stepper" data-key="${key}">
+        <button class="qty-btn qty-minus" type="button" aria-label="تقليل">−</button>
+        <span class="qty-val">${qty}</span>
+        <button class="qty-btn qty-plus" type="button" aria-label="زيادة">+</button>
+      </div>
+    </td>
+    <td class="td-actions">
+      <button class="act-pill copy-btn" title="نسخ"><i class="fas fa-copy"></i></button>
+      <a class="act-pill" href="https://wa.me/?text=${encodeURIComponent(shareText)}" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+    </td>
+  `;
+
+  if (qty > 0) tr.classList.add('in-cart');
+
+  tr.querySelector('.copy-btn').onclick = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(`${item.name}: ${item.price||'—'} ج.م`);
+    showToast('تم نسخ السعر ✓');
+  };
+
+  tr.querySelector('.qty-minus').onclick = (e) => { e.stopPropagation(); changeQty(item, -1); };
+  tr.querySelector('.qty-plus').onclick  = (e) => { e.stopPropagation(); changeQty(item, 1); };
+
+  return tr;
+}
+
+// ── display page ──
+function displayPage(idx) {
+  if (idx < 0 || idx >= allCats.length) return;
+  currentIdx = idx;
+
+  // scroll to top of page on navigation
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (allCats[idx].isIndex) renderIndex();
+  else renderCategory(allCats[idx]);
+
+  updateNav();
+  updateTabs();
+}
+
+function updateNav() {
+  const total = allCats.length;
+  prevBtn.disabled = currentIdx === 0;
+  nextBtn.disabled = currentIdx === total - 1;
+  progressFill.style.width = total <= 1 ? '0%' : (currentIdx / (total - 1)) * 100 + '%';
+
+  if (currentIdx === 0) {
+    pageInfoEl.textContent = 'الرئيسية';
+    indexBtn.style.display = 'none';
+  } else {
+    pageInfoEl.textContent = `${currentIdx} / ${total - 1}`;
+    indexBtn.style.display = 'inline-block';
+  }
+}
+
+function updateTabs() {
+  navStrip.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.idx) === currentIdx);
+  });
+}
+
+// ── nav buttons ──
+prevBtn.onclick  = () => displayPage(currentIdx - 1);
+nextBtn.onclick  = () => displayPage(currentIdx + 1);
+indexBtn.onclick = () => displayPage(0);
+
+function mkEyebrow(label) {
+  const d = document.createElement('div');
+  d.className = 'section-eyebrow';
+  d.innerHTML = `<div class="eyebrow-line"></div><div class="eyebrow-text">${label}</div><div class="eyebrow-line"></div>`;
+  return d;
+}
+
+// ── search ──
+searchInput.addEventListener('input', () => {
+  const term = searchInput.value.trim();
+  clearSearch.style.display = term ? 'block' : 'none';
+  if (!term) { autoBox.style.display = 'none'; displayPage(currentIdx); return; }
+
+  const clean = cleanText(term);
+  const results = [];
+
+  allData.forEach(row => {
+    const nameK = fk(row,'الصنف');
+    const catK  = fk(row,'التصنيف');
+    const nameT = nameK ? row[nameK] : '';
+    const catT  = catK  ? row[catK]  : '';
+    if (cleanText(nameT).includes(clean) || cleanText(catT).includes(clean)) {
+      results.push({
+        name: (nameT||'').trim(),
+        price: (row[fk(row,'السعر')]||'').trim(),
+        unit:  (row[fk(row,'الوحدة')]||'').trim(),
+        pkg:   (row[fk(row,'العبوة')]||'').trim(),
+        categoryName: (catT||'').trim()
+      });
+    }
+  });
+
+  showAutoComplete(results.slice(0,5));
+  showSearchResults(results, term);
+});
+
+function showAutoComplete(items) {
+  if (!items.length) { autoBox.style.display = 'none'; return; }
+  autoBox.innerHTML = '';
+  items.forEach(it => {
+    const d = document.createElement('div');
+    d.className = 'auto-item';
+    d.innerHTML = `<span>${it.name}</span><span class="auto-cat">${it.categoryName}</span>`;
+    d.onclick = () => {
+      searchInput.value = it.name;
+      autoBox.style.display = 'none';
+      showSearchResults([it], it.name);
+    };
+    autoBox.appendChild(d);
+  });
+  autoBox.style.display = 'block';
+}
+
+function showSearchResults(results, term) {
+  pageContent.innerHTML = '';
+  if (!results.length) {
+    pageContent.innerHTML = `<div class="no-results"><i class="fas fa-search-minus"></i><p>لا نتائج لـ "<strong>${term}</strong>"</p></div>`;
+    return;
+  }
+
+  const bar = document.createElement('div');
+  bar.className = 'cat-header-bar';
+  bar.innerHTML = `<div class="ch-title">نتائج البحث</div><div class="ch-count">${results.length} نتيجة</div>`;
+  pageContent.appendChild(bar);
+
+  const table = document.createElement('table');
+  table.className = 'items-table';
+  table.innerHTML = `<thead><tr><th>الصنف</th><th>الوحدة</th><th>السعر</th><th>الكمية</th><th></th></tr></thead><tbody></tbody>`;
+  const tbody = table.querySelector('tbody');
+  results.forEach(it => tbody.appendChild(buildRow(it, true)));
+  pageContent.appendChild(table);
+}
+
+clearSearch.onclick = () => {
+  searchInput.value = '';
+  clearSearch.style.display = 'none';
+  autoBox.style.display = 'none';
+  displayPage(currentIdx);
+};
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-inner')) autoBox.style.display = 'none';
+});
+
+// ══════════════════════════════════════════
+//  السلة والطلب (الكمية بالعبوة)
+// ══════════════════════════════════════════
+let cart = {}; // key -> {name, pkg, unit, price, qty, categoryName}
+
+const cartFab       = document.getElementById('cartFab');
+const cartBadge      = document.getElementById('cartBadge');
+const cartOverlay    = document.getElementById('cartOverlay');
+const closeCartBtn   = document.getElementById('closeCart');
+const cartLinesEl    = document.getElementById('cartLines');
+const cartTotalRow   = document.getElementById('cartTotalRow');
+const cartTotalVal   = document.getElementById('cartTotalVal');
+const customerForm   = document.getElementById('customerForm');
+const cartActionsRow = document.getElementById('cartActionsRow');
+const exportPdfBtn   = document.getElementById('exportPdfBtn');
+const clearCartBtn   = document.getElementById('clearCartBtn');
+
+function itemKey(item) { return item.categoryName + '||' + item.name; }
+
+function parsePrice(p) {
+  const n = parseFloat((p||'').toString().replace(/[^\d.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function getQty(item) {
+  const k = itemKey(item);
+  return cart[k] ? cart[k].qty : 0;
+}
+
+// الكمية هنا تُحسب "بالعبوة" (item.pkg) وليس بالوحدة (item.unit)
+function changeQty(item, delta) {
+  const k = itemKey(item);
+  let entry = cart[k];
+  if (!entry) {
+    entry = { name: item.name, pkg: item.pkg, unit: item.unit, price: parsePrice(item.price), qty: 0, categoryName: item.categoryName };
+    cart[k] = entry;
+  }
+  entry.qty = Math.max(0, entry.qty + delta);
+  if (entry.qty === 0) delete cart[k];
+  syncQtyDisplays(k, cart[k] ? cart[k].qty : 0);
+  updateCartFab();
+}
+
+function syncQtyDisplays(key, qty) {
+  document.querySelectorAll('.qty-stepper').forEach(stepper => {
+    if (stepper.dataset.key !== key) return;
+    stepper.querySelector('.qty-val').textContent = qty;
+    const row = stepper.closest('tr');
+    if (row) row.classList.toggle('in-cart', qty > 0);
+  });
+}
+
+function updateCartFab() {
+  const keys = Object.keys(cart);
+  const totalQty = keys.reduce((s,k) => s + cart[k].qty, 0);
+  cartBadge.textContent = totalQty;
+  cartFab.style.display = totalQty > 0 ? 'flex' : 'none';
+}
+
+function cartTotal() {
+  return Object.values(cart).reduce((s, it) => s + it.qty * it.price, 0);
+}
+
+function openCart() {
+  renderCartModal();
+  cartOverlay.style.display = 'flex';
+}
+function closeCart() { cartOverlay.style.display = 'none'; }
+
+cartFab.onclick = openCart;
+closeCartBtn.onclick = closeCart;
+cartOverlay.onclick = (e) => { if (e.target === cartOverlay) closeCart(); };
+
+function renderCartModal() {
+  const keys = Object.keys(cart);
+  cartLinesEl.innerHTML = '';
+
+  if (!keys.length) {
+    cartLinesEl.innerHTML = '<div class="cart-empty"><i class="fas fa-shopping-bag" style="font-size:1.8rem;display:block;margin-bottom:8px;"></i>السلة فارغة</div>';
+    cartTotalRow.style.display = 'none';
+    customerForm.style.display = 'none';
+    cartActionsRow.style.display = 'none';
+    return;
+  }
+
+  keys.forEach(k => {
+    const it = cart[k];
+    const line = document.createElement('div');
+    line.className = 'cart-line';
+    line.innerHTML = `
+      <div class="cart-line-info">
+        <div class="cart-line-name">${it.name} × ${it.qty}</div>
+        ${it.pkg ? `<div class="cart-line-pkg">العبوة: ${it.pkg}</div>` : ''}
+      </div>
+      <div class="cart-line-total">${(it.qty * it.price).toFixed(2)} ج.م</div>
+      <button class="cart-line-remove" title="حذف"><i class="fas fa-trash"></i></button>
+    `;
+    line.querySelector('.cart-line-remove').onclick = () => {
+      syncQtyDisplays(k, 0);
+      delete cart[k];
+      updateCartFab();
+      renderCartModal();
+    };
+    cartLinesEl.appendChild(line);
+  });
+
+  cartTotalVal.textContent = cartTotal().toFixed(2) + ' ج.م';
+  cartTotalRow.style.display = 'flex';
+  customerForm.style.display = 'flex';
+  cartActionsRow.style.display = 'flex';
+}
+
+clearCartBtn.onclick = () => {
+  Object.keys(cart).forEach(k => syncQtyDisplays(k, 0));
+  cart = {};
+  updateCartFab();
+  renderCartModal();
+};
+
+// ── تصدير الفاتورة PDF ──
+exportPdfBtn.onclick = async () => {
+  const keys = Object.keys(cart);
+  if (!keys.length) return;
+
+  exportPdfBtn.disabled = true;
+  exportPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التجهيز...';
+
+  const invBody = document.getElementById('invBody');
+  invBody.innerHTML = '';
+  keys.forEach(k => {
+    const it = cart[k];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.name}</td>
+      <td>${it.pkg || '—'}</td>
+      <td>${it.qty}</td>
+      <td>${it.price.toFixed(2)} ج.م</td>
+      <td>${(it.qty * it.price).toFixed(2)} ج.م</td>
+    `;
+    invBody.appendChild(tr);
+  });
+
+  document.getElementById('invGrandTotal').textContent = cartTotal().toFixed(2) + ' ج.م';
+  document.getElementById('invDate').textContent = 'التاريخ: ' + new Date().toLocaleDateString('ar-EG');
+  document.getElementById('invNumber').textContent = 'رقم الفاتورة: ' + Date.now().toString().slice(-6);
+
+  const custName  = document.getElementById('custName').value.trim();
+  const custPhone = document.getElementById('custPhone').value.trim();
+  const invCustomer = document.getElementById('invCustomer');
+  invCustomer.innerHTML = (custName || custPhone)
+    ? `${custName ? `<strong>العميل:</strong> ${custName} &nbsp;&nbsp;` : ''}${custPhone ? `<strong>الهاتف:</strong> ${custPhone}` : ''}`
+    : '';
+
+  try {
+    const invoiceEl = document.getElementById('invoiceTemplate');
+    const canvas = await html2canvas(invoiceEl, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth  = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth  = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(`فاتورة-جني-جولد-${Date.now().toString().slice(-6)}.pdf`);
+    showToast('تم تصدير الفاتورة ✓');
+  } catch (err) {
+    console.error(err);
+    showToast('حصل خطأ أثناء التصدير');
+  } finally {
+    exportPdfBtn.disabled = false;
+    exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> تصدير الفاتورة PDF';
+  }
+};
+
+// ── load CSV ──
+Papa.parse(SHEET_URL, {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete(res) {
+    allData = res.data;
+    processData(allData);
+  },
+  error() {
+    pageContent.innerHTML = '<div style="padding:60px;text-align:center;color:#c0392b"><i class="fas fa-exclamation-triangle"></i><p style="margin-top:10px">خطأ في الاتصال بقاعدة البيانات</p></div>';
+  }
+});
+</script>
+</body>
+</html>
