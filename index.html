@@ -632,38 +632,24 @@
     --dark-text:#FAF7F2;
   }
 
-  /* ── QTY STEPPER (كمية بالعبوة) ── */
-  .qty-stepper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    justify-content: center;
-  }
-  .qty-btn {
-    width: 26px; height: 26px;
-    border: 1px solid var(--gold-lt);
-    background: var(--white);
-    color: var(--gold);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-    line-height: 1;
-    user-select: none;
-    transition: all .15s;
-  }
-  .qty-btn:hover { background: var(--gold); color: var(--white); }
-  .qty-btn:active { transform: scale(.9); }
-  .qty-val {
-    min-width: 20px;
+  /* ── QTY INPUT (كمية بالعبوة تُكتب يدويًا) ── */
+  .qty-input-wrap { display: flex; justify-content: center; }
+  .qty-input {
+    width: 60px;
     text-align: center;
-    font-weight: 700;
+    padding: 7px 4px;
+    border: 1px solid var(--gold-lt);
+    border-radius: 3px;
+    font-family: 'Tajawal', sans-serif;
     font-size: .95rem;
+    font-weight: 700;
     color: var(--ink);
+    background: var(--white);
   }
+  .qty-input:focus { outline: none; border-color: var(--gold); background: var(--gold-bg); }
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .qty-input[type=number] { -moz-appearance: textfield; }
   .td-qty { text-align: center; }
   tr.in-cart { background: var(--gold-bg); }
 
@@ -776,9 +762,11 @@
   }
   .customer-form input:focus { outline: none; border-color: var(--gold); }
 
-  .cart-actions { display: flex; gap: 10px; margin-top: 1.25rem; }
+  .cart-actions { display: flex; gap: 10px; margin-top: 1.25rem; flex-wrap: wrap; }
+  .cart-actions-secondary { display: flex; gap: 10px; margin-top: 10px; }
   .cart-btn {
     flex: 1;
+    min-width: 140px;
     padding: 12px;
     border: none;
     cursor: pointer;
@@ -792,6 +780,8 @@
     justify-content: center;
     gap: 8px;
   }
+  .cart-btn-whatsapp { background: #25D366; color: var(--white); }
+  .cart-btn-whatsapp:hover { background: #1DA851; }
   .cart-btn-pdf { background: var(--gold); color: var(--white); }
   .cart-btn-pdf:hover { background: #6E5310; }
   .cart-btn-clear { background: transparent; border: 1px solid var(--muted); color: var(--muted); }
@@ -930,7 +920,10 @@
       <input type="text" id="custPhone" placeholder="رقم الهاتف (اختياري)">
     </div>
     <div class="cart-actions" id="cartActionsRow" style="display:none;">
-      <button class="cart-btn cart-btn-pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> تصدير الفاتورة PDF</button>
+      <button class="cart-btn cart-btn-whatsapp" id="shareWhatsappBtn"><i class="fab fa-whatsapp"></i> مشاركة عبر واتساب</button>
+      <button class="cart-btn cart-btn-pdf" id="exportPdfBtn"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
+    </div>
+    <div class="cart-actions-secondary" id="cartActionsSecondary" style="display:none;">
       <button class="cart-btn cart-btn-clear" id="clearCartBtn"><i class="fas fa-trash"></i> مسح الكل</button>
     </div>
   </div>
@@ -1210,10 +1203,8 @@ function buildRow(item, showBadge = false) {
     <td class="td-unit">${item.unit||'—'}</td>
     <td class="td-price">${item.price||'—'} <span>ج.م</span></td>
     <td class="td-qty">
-      <div class="qty-stepper" data-key="${key}">
-        <button class="qty-btn qty-minus" type="button" aria-label="تقليل">−</button>
-        <span class="qty-val">${qty}</span>
-        <button class="qty-btn qty-plus" type="button" aria-label="زيادة">+</button>
+      <div class="qty-input-wrap" data-key="${key}">
+        <input type="number" class="qty-input" min="0" step="1" inputmode="numeric" placeholder="0" value="${qty || ''}" aria-label="الكمية بالعبوة">
       </div>
     </td>
     <td class="td-actions">
@@ -1230,8 +1221,9 @@ function buildRow(item, showBadge = false) {
     showToast('تم نسخ السعر ✓');
   };
 
-  tr.querySelector('.qty-minus').onclick = (e) => { e.stopPropagation(); changeQty(item, -1); };
-  tr.querySelector('.qty-plus').onclick  = (e) => { e.stopPropagation(); changeQty(item, 1); };
+  const qtyInput = tr.querySelector('.qty-input');
+  qtyInput.onclick = (e) => e.stopPropagation();
+  qtyInput.oninput = (e) => setQty(item, parseInt(e.target.value, 10));
 
   return tr;
 }
@@ -1366,17 +1358,19 @@ document.addEventListener('click', e => {
 // ══════════════════════════════════════════
 let cart = {}; // key -> {name, pkg, unit, price, qty, categoryName}
 
-const cartFab       = document.getElementById('cartFab');
-const cartBadge      = document.getElementById('cartBadge');
-const cartOverlay    = document.getElementById('cartOverlay');
-const closeCartBtn   = document.getElementById('closeCart');
-const cartLinesEl    = document.getElementById('cartLines');
-const cartTotalRow   = document.getElementById('cartTotalRow');
-const cartTotalVal   = document.getElementById('cartTotalVal');
-const customerForm   = document.getElementById('customerForm');
-const cartActionsRow = document.getElementById('cartActionsRow');
-const exportPdfBtn   = document.getElementById('exportPdfBtn');
-const clearCartBtn   = document.getElementById('clearCartBtn');
+const cartFab         = document.getElementById('cartFab');
+const cartBadge        = document.getElementById('cartBadge');
+const cartOverlay      = document.getElementById('cartOverlay');
+const closeCartBtn     = document.getElementById('closeCart');
+const cartLinesEl      = document.getElementById('cartLines');
+const cartTotalRow     = document.getElementById('cartTotalRow');
+const cartTotalVal     = document.getElementById('cartTotalVal');
+const customerForm     = document.getElementById('customerForm');
+const cartActionsRow   = document.getElementById('cartActionsRow');
+const cartActionsSecondary = document.getElementById('cartActionsSecondary');
+const exportPdfBtn     = document.getElementById('exportPdfBtn');
+const shareWhatsappBtn = document.getElementById('shareWhatsappBtn');
+const clearCartBtn     = document.getElementById('clearCartBtn');
 
 function itemKey(item) { return item.categoryName + '||' + item.name; }
 
@@ -1390,25 +1384,27 @@ function getQty(item) {
   return cart[k] ? cart[k].qty : 0;
 }
 
-// الكمية هنا تُحسب "بالعبوة" (item.pkg) وليس بالوحدة (item.unit)
-function changeQty(item, delta) {
+// الكمية هنا تُكتب يدويًا وتُحسب "بالعبوة" (item.pkg) وليس بالوحدة (item.unit)
+function setQty(item, qty) {
+  qty = Math.max(0, Math.floor(Number(qty)) || 0);
   const k = itemKey(item);
-  let entry = cart[k];
-  if (!entry) {
-    entry = { name: item.name, pkg: item.pkg, unit: item.unit, price: parsePrice(item.price), qty: 0, categoryName: item.categoryName };
-    cart[k] = entry;
+
+  if (qty === 0) {
+    delete cart[k];
+  } else {
+    cart[k] = { name: item.name, pkg: item.pkg, unit: item.unit, price: parsePrice(item.price), qty, categoryName: item.categoryName };
   }
-  entry.qty = Math.max(0, entry.qty + delta);
-  if (entry.qty === 0) delete cart[k];
-  syncQtyDisplays(k, cart[k] ? cart[k].qty : 0);
+
+  syncQtyInputs(k, qty);
   updateCartFab();
 }
 
-function syncQtyDisplays(key, qty) {
-  document.querySelectorAll('.qty-stepper').forEach(stepper => {
-    if (stepper.dataset.key !== key) return;
-    stepper.querySelector('.qty-val').textContent = qty;
-    const row = stepper.closest('tr');
+function syncQtyInputs(key, qty) {
+  document.querySelectorAll('.qty-input-wrap').forEach(wrap => {
+    if (wrap.dataset.key !== key) return;
+    const input = wrap.querySelector('.qty-input');
+    if (document.activeElement !== input) input.value = qty || '';
+    const row = wrap.closest('tr');
     if (row) row.classList.toggle('in-cart', qty > 0);
   });
 }
@@ -1443,6 +1439,7 @@ function renderCartModal() {
     cartTotalRow.style.display = 'none';
     customerForm.style.display = 'none';
     cartActionsRow.style.display = 'none';
+    cartActionsSecondary.style.display = 'none';
     return;
   }
 
@@ -1459,8 +1456,8 @@ function renderCartModal() {
       <button class="cart-line-remove" title="حذف"><i class="fas fa-trash"></i></button>
     `;
     line.querySelector('.cart-line-remove').onclick = () => {
-      syncQtyDisplays(k, 0);
       delete cart[k];
+      syncQtyInputs(k, 0);
       updateCartFab();
       renderCartModal();
     };
@@ -1471,23 +1468,19 @@ function renderCartModal() {
   cartTotalRow.style.display = 'flex';
   customerForm.style.display = 'flex';
   cartActionsRow.style.display = 'flex';
+  cartActionsSecondary.style.display = 'flex';
 }
 
 clearCartBtn.onclick = () => {
-  Object.keys(cart).forEach(k => syncQtyDisplays(k, 0));
+  Object.keys(cart).forEach(k => syncQtyInputs(k, 0));
   cart = {};
   updateCartFab();
   renderCartModal();
 };
 
-// ── تصدير الفاتورة PDF ──
-exportPdfBtn.onclick = async () => {
+// ── بناء ملف PDF للفاتورة وإرجاعه كـ Blob (تستخدمه دالتا التحميل والمشاركة) ──
+async function buildInvoiceBlob() {
   const keys = Object.keys(cart);
-  if (!keys.length) return;
-
-  exportPdfBtn.disabled = true;
-  exportPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التجهيز...';
-
   const invBody = document.getElementById('invBody');
   invBody.innerHTML = '';
   keys.forEach(k => {
@@ -1505,7 +1498,8 @@ exportPdfBtn.onclick = async () => {
 
   document.getElementById('invGrandTotal').textContent = cartTotal().toFixed(2) + ' ج.م';
   document.getElementById('invDate').textContent = 'التاريخ: ' + new Date().toLocaleDateString('ar-EG');
-  document.getElementById('invNumber').textContent = 'رقم الفاتورة: ' + Date.now().toString().slice(-6);
+  const invoiceNum = Date.now().toString().slice(-6);
+  document.getElementById('invNumber').textContent = 'رقم الفاتورة: ' + invoiceNum;
 
   const custName  = document.getElementById('custName').value.trim();
   const custPhone = document.getElementById('custPhone').value.trim();
@@ -1514,39 +1508,102 @@ exportPdfBtn.onclick = async () => {
     ? `${custName ? `<strong>العميل:</strong> ${custName} &nbsp;&nbsp;` : ''}${custPhone ? `<strong>الهاتف:</strong> ${custPhone}` : ''}`
     : '';
 
-  try {
-    const invoiceEl = document.getElementById('invoiceTemplate');
-    const canvas = await html2canvas(invoiceEl, { scale: 2, backgroundColor: '#ffffff' });
-    const imgData = canvas.toDataURL('image/png');
+  const invoiceEl = document.getElementById('invoiceTemplate');
+  const canvas = await html2canvas(invoiceEl, { scale: 2, backgroundColor: '#ffffff' });
+  const imgData = canvas.toDataURL('image/png');
 
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pageWidth  = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth  = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const pageWidth  = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const imgWidth  = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let heightLeft = imgHeight;
-    let position = 0;
+  let heightLeft = imgHeight;
+  let position = 0;
 
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
+  }
 
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
+  const blob = pdf.output('blob');
+  const filename = `فاتورة-جني-جولد-${invoiceNum}.pdf`;
+  return { blob, filename };
+}
 
-    pdf.save(`فاتورة-جني-جولد-${Date.now().toString().slice(-6)}.pdf`);
-    showToast('تم تصدير الفاتورة ✓');
+function setBtnLoading(btn, loading, idleHtml) {
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<i class="fas fa-spinner fa-spin"></i> جاري التجهيز...' : idleHtml;
+}
+
+// ── تحميل الفاتورة كملف PDF على الجهاز ──
+const PDF_BTN_LABEL = '<i class="fas fa-file-pdf"></i> تحميل PDF';
+exportPdfBtn.onclick = async () => {
+  if (!Object.keys(cart).length) return;
+  setBtnLoading(exportPdfBtn, true, PDF_BTN_LABEL);
+  try {
+    const { blob, filename } = await buildInvoiceBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('تم تحميل الفاتورة ✓');
   } catch (err) {
     console.error(err);
     showToast('حصل خطأ أثناء التصدير');
   } finally {
-    exportPdfBtn.disabled = false;
-    exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> تصدير الفاتورة PDF';
+    setBtnLoading(exportPdfBtn, false, PDF_BTN_LABEL);
+  }
+};
+
+// ── مشاركة الفاتورة عبر واتساب — يفتح قائمة المشاركة الأصلية للجهاز
+//    فيها واتساب، والعميل يختار أي رقم من جهات اتصاله ويرفق ملف الـ PDF مباشرة
+//    (تشتغل على متصفح الموبايل؛ لو مش مدعومة بينزل الـ PDF ويفتح واتساب كبديل) ──
+const WA_BTN_LABEL = '<i class="fab fa-whatsapp"></i> مشاركة عبر واتساب';
+shareWhatsappBtn.onclick = async () => {
+  if (!Object.keys(cart).length) return;
+  setBtnLoading(shareWhatsappBtn, true, WA_BTN_LABEL);
+  try {
+    const { blob, filename } = await buildInvoiceBlob();
+    const file = new File([blob], filename, { type: 'application/pdf' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'فاتورة Jana Gold',
+        text: 'فاتورتك من Jana Gold — حلاوة حلاوتنا'
+      });
+      showToast('تم فتح المشاركة ✓');
+    } else {
+      // بديل للأجهزة/المتصفحات اللي مش بتدعم مشاركة الملفات
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('تم تحميل الفاتورة، افتح واتساب وأرفقها يدويًا');
+      window.open('https://wa.me/', '_blank');
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      console.error(err);
+      showToast('حصل خطأ أثناء المشاركة');
+    }
+  } finally {
+    setBtnLoading(shareWhatsappBtn, false, WA_BTN_LABEL);
   }
 };
 
